@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>CLUB SI 3v3 Futsal Tournament</title>
+  <title>CLUB SI 3V3 Futsal Tournament</title>
   <style>
     :root {
       --bg: #0f172a;
@@ -68,7 +68,6 @@
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.5rem; }
     .card { background: var(--surface); backdrop-filter: blur(8px); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; box-shadow: 0 8px 16px rgba(0,0,0,0.2); }
     
-    /* Matches Styling */
     .match-card { text-align: center; position: relative; border-top: 3px solid var(--border); }
     .match-card[data-stage="semi"] { border-top-color: var(--warning); }
     .match-card[data-stage="final"] { border-top-color: var(--danger); }
@@ -86,7 +85,6 @@
     .score-number { font-size: 3rem; font-weight: 900; background: rgba(0,0,0,0.4); padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid var(--border); width: 80px; }
     .score-vs { font-size: 1rem; color: var(--text-muted); font-weight: bold; }
     
-    /* Standings Table */
     .standings-wrapper { margin-bottom: 2rem; }
     .group-header { font-size: 1.2rem; color: var(--warning); margin-bottom: 0.5rem; border-bottom: 1px dashed var(--border); padding-bottom: 0.3rem;}
     table { width: 100%; border-collapse: collapse; background: var(--surface); border-radius: var(--radius); overflow: hidden; }
@@ -96,7 +94,6 @@
     tr:last-child td { border-bottom: none; }
     .pts-col { font-weight: bold; color: var(--primary); font-size: 1.1rem; }
 
-    /* Admin Panel */
     .admin-controls { display: flex; gap: 0.25rem; }
     .admin-controls button { padding: 0.25rem 0.5rem; font-size: 0.8rem; }
     .admin-section { background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: var(--radius); border: 1px solid var(--primary); }
@@ -106,7 +103,6 @@
     .flex { display: flex; } .justify-between { justify-content: space-between; } .items-center { align-items: center; }
     .section-title { font-size: 1.5rem; margin-top: 2rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--border); display: flex; justify-content: space-between; align-items: center;}
 
-    /* Modal */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: center; z-index: 50; }
     .modal { background: var(--surface); padding: 2rem; border-radius: var(--radius); width: 100%; max-width: 400px; border: 1px solid var(--primary); }
   </style>
@@ -114,7 +110,7 @@
 <body>
 
   <header>
-    <h2>CLUB SI 3v3 Futsal Tournament</h2>
+    <h2>CLUB SI 3V3 Futsal Tournament Score Dashboard</h2>
     <div>
       <button id="authBtn" class="btn-outline">Admin Login</button>
     </div>
@@ -218,7 +214,7 @@
   <div id="loginModal" class="modal-overlay hidden">
     <div class="modal">
       <h3 style="margin-bottom: 1rem;">Admin Access</h3>
-      <input type="password" id="adminPassInput" placeholder="Enter PIN (0000)" style="width: 100%; margin-bottom: 1rem; font-size: 1.2rem; text-align: center;" />
+      <input type="password" id="adminPassInput" placeholder="Enter PIN" style="width: 100%; margin-bottom: 1rem; font-size: 1.2rem; text-align: center;" />
       <div class="flex justify-between">
         <button class="btn-outline" onclick="toggleModal(false)">Cancel</button>
         <button onclick="attemptLogin()">Unlock</button>
@@ -290,20 +286,29 @@
 
   function toggleModal(show) {
     const m = document.getElementById('loginModal');
-    show ? m.classList.remove('hidden') : m.classList.add('hidden');
-    if (show) document.getElementById('adminPassInput').focus();
+    const input = document.getElementById('adminPassInput');
+    if (show) {
+      m.classList.remove('hidden');
+      input.focus();
+    } else {
+      m.classList.add('hidden');
+      input.value = ''; // FIX: Ensures the input is wiped if they close without logging in
+    }
   }
 
   function attemptLogin() {
     const pass = document.getElementById('adminPassInput').value;
+    // Note: Default is '0000', change via environment variables in production
     if (pass === '0000') {
       state.isAdmin = true; state.adminToken = pass;
       document.getElementById('authBtn').textContent = 'Exit Admin';
       document.getElementById('adminPanel').classList.remove('hidden');
-      document.getElementById('adminPassInput').value = '';
-      toggleModal(false);
+      toggleModal(false); // Modal closes and wipes the input correctly
       updateAdminDropdowns(); renderDashboard();
-    } else { alert('Invalid Password'); }
+    } else { 
+      alert('Invalid Password'); 
+      document.getElementById('adminPassInput').value = ''; // FIX: Wipe input on failure
+    }
   }
 
   async function apiCall(url, method, body = null) {
@@ -317,7 +322,6 @@
     return data;
   }
 
-  // --- MATCH FUNCTIONS ---
   async function createMatch() {
     const t1 = document.getElementById('matchTeam1Select').value;
     const t2 = document.getElementById('matchTeam2Select').value;
@@ -339,7 +343,6 @@
     catch(e) { alert(e.message); }
   }
 
-  // --- TEAM FUNCTIONS ---
   async function createTeam() {
     const input = document.getElementById('newTeamName');
     const group = document.getElementById('newTeamGroup').value;
@@ -367,7 +370,6 @@
     try { await apiCall(`/api/teams/${id}`, 'DELETE'); loadData(); } catch(e) { alert(e.message); }
   }
 
-  // --- PLAYER FUNCTIONS (CRUD) ---
   async function createSinglePlayer() {
     const team_id = document.getElementById('singlePlayerTeam').value;
     const name = document.getElementById('spName').value;
@@ -402,7 +404,6 @@
     catch(e) { alert(e.message); }
   }
 
-  // Edit Player Modal UI Controls
   function toggleEditPlayerModal(show) {
     const m = document.getElementById('editPlayerModal');
     if (show) m.classList.remove('hidden');
@@ -437,8 +438,6 @@
     } catch (e) { alert(e.message); }
   }
 
-
-  // --- UI RENDER HELPERS ---
   function updateAdminDropdowns() {
     const options = '<option value="">Select...</option>' + state.teams.map(t => `<option value="${t.id}">${t.name} (Grp ${t.group_name || 'A'})</option>`).join('');
     document.getElementById('playerTeamSelect').innerHTML = options;
