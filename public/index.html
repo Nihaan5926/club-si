@@ -5,257 +5,438 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>CLUB SI 3V3 Futsal Tournament</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
     :root {
-      --bg: #0f172a;
-      --surface: rgba(30, 41, 59, 0.85);
-      --surface-hover: rgba(51, 65, 85, 0.9);
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
-      --primary: #10b981;
-      --primary-hover: #059669;
-      --danger: #ef4444;
-      --warning: #f59e0b;
-      --success: #3b82f6;
-      --border: rgba(255, 255, 255, 0.1);
-      --radius: 12px;
+      /* App Colors based on reference image */
+      --bg-outside: #fbbbb2; /* Peachy background */
+      --bg-app: #181926; /* Dark navy/purple background */
+      --surface: #222436; /* Lighter surface for cards */
+      --surface-hover: #2b2e45;
+      --text: #ffffff;
+      --text-muted: #8b8fa3;
+      --primary: #7a5cff; /* Vibrant purple */
+      --primary-hover: #694ce6;
+      --danger: #ff5c77;
+      --warning: #ffb84c;
+      --success: #00d09c;
+      --border: rgba(255, 255, 255, 0.05);
+      --radius: 16px;
+      --radius-lg: 24px;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
     
     body { 
-      font-family: system-ui, -apple-system, sans-serif; 
+      background: var(--bg-outside);
       color: var(--text); 
       line-height: 1.5; 
-      padding-bottom: 2rem;
-      background: radial-gradient(circle at 50% 0%, #1e293b, #020617);
-      background-size: cover;
-      background-attachment: fixed;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    /* Main App Window Layout */
+    .app-window {
+      width: 100%;
+      max-width: 1400px;
+      height: 90vh;
+      background: var(--bg-app);
+      border-radius: 30px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+      display: flex;
+      overflow: hidden;
       position: relative;
     }
-    
-    body::before {
-      content: "";
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-image: repeating-linear-gradient(0deg, transparent, transparent 50px, rgba(255,255,255,0.03) 50px, rgba(255,255,255,0.03) 100px);
-      z-index: -1;
-      pointer-events: none;
+
+    /* Fake Sidebar */
+    .sidebar {
+      width: 90px;
+      background: var(--surface);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 0;
+      border-right: 1px solid var(--border);
+      gap: 2rem;
     }
 
+    .sidebar-logo {
+      color: var(--primary);
+      font-weight: 800;
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+    }
+
+    .sidebar-icon {
+      width: 45px;
+      height: 45px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.05);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .sidebar-icon:hover, .sidebar-icon.active {
+      background: rgba(122, 92, 255, 0.2);
+      color: var(--primary);
+    }
+
+    .main-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 2rem 3rem;
+      scrollbar-width: thin;
+      scrollbar-color: var(--surface) transparent;
+    }
+
+    .main-content::-webkit-scrollbar { width: 6px; }
+    .main-content::-webkit-scrollbar-thumb { background: var(--surface); border-radius: 10px; }
+    
+    /* Header & Auth */
     header { 
-      background: rgba(15, 23, 42, 0.9); 
-      backdrop-filter: blur(10px);
-      padding: 1rem 2rem; 
-      border-bottom: 1px solid var(--primary); 
-      display: flex; justify-content: space-between; align-items: center; 
-      position: sticky; top: 0; z-index: 10; 
-      box-shadow: 0 4px 20px rgba(16, 185, 129, 0.2);
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      margin-bottom: 2rem;
+    }
+
+    header h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
     }
     
-    .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
-    
-    button { background: var(--primary); color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
-    button:hover { background: var(--primary-hover); transform: translateY(-1px); }
-    button.btn-danger { background: var(--danger); }
-    button.btn-warning { background: var(--warning); color: #000; }
-    button.btn-success { background: var(--success); }
-    button.btn-outline { background: transparent; border: 1px solid var(--text-muted); color: var(--text); }
-    button.btn-outline:hover { background: var(--surface-hover); border-color: var(--text); }
-    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    button { 
+      background: var(--primary); 
+      color: white; 
+      border: none; 
+      padding: 0.6rem 1.2rem; 
+      border-radius: 10px; 
+      cursor: pointer; 
+      font-weight: 600; 
+      font-size: 0.9rem;
+      transition: all 0.2s; 
+      box-shadow: 0 4px 15px rgba(122, 92, 255, 0.3);
+    }
+    button:hover { background: var(--primary-hover); transform: translateY(-2px); }
+    button.btn-danger { background: var(--danger); box-shadow: 0 4px 15px rgba(255, 92, 119, 0.2); }
+    button.btn-warning { background: var(--warning); color: #000; box-shadow: none; }
+    button.btn-success { background: var(--success); box-shadow: none; }
+    button.btn-outline { background: var(--surface); box-shadow: none; border: 1px solid var(--border); color: var(--text); }
+    button.btn-outline:hover { background: var(--surface-hover); border-color: var(--text-muted); }
+    button:disabled { opacity: 0.5; cursor: not-allowed; transform: none;}
 
-    input, select, textarea { background: rgba(0,0,0,0.5); color: var(--text); border: 1px solid var(--border); padding: 0.5rem; border-radius: 6px; outline: none; }
+    input, select, textarea { 
+      background: rgba(0,0,0,0.2); 
+      color: var(--text); 
+      border: 1px solid var(--border); 
+      padding: 0.6rem 1rem; 
+      border-radius: 10px; 
+      outline: none; 
+      font-family: inherit;
+    }
     input:focus, select:focus, textarea:focus { border-color: var(--primary); }
 
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.5rem; }
-    .card { background: var(--surface); backdrop-filter: blur(8px); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; box-shadow: 0 8px 16px rgba(0,0,0,0.2); }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; }
     
-    .match-card { text-align: center; position: relative; border-top: 3px solid var(--border); }
-    .match-card[data-stage="semi"] { border-top-color: var(--warning); }
-    .match-card[data-stage="final"] { border-top-color: var(--danger); }
-    
-    .match-status { position: absolute; top: 10px; right: 10px; font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: bold; text-transform: uppercase; }
-    .status-live { background: rgba(16, 185, 129, 0.2); color: var(--primary); border: 1px solid var(--primary); animation: pulse 2s infinite; }
-    .status-completed { background: rgba(255,255,255,0.1); color: var(--text-muted); }
-    
-    .stage-badge { position: absolute; top: 10px; left: 10px; font-size: 0.75rem; color: var(--warning); font-weight: bold; text-transform: uppercase; }
+    /* MVP / Top Banner Mockup */
+    .top-banner {
+      background: linear-gradient(135deg, rgba(34,36,54,1) 0%, rgba(24,25,38,1) 100%);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 3rem;
+      position: relative;
+      overflow: hidden;
+    }
 
-    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); } 70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
+    /* Date Slider Mockup */
+    .date-slider {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      align-items: center;
+    }
+    .date-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 60px;
+      height: 80px;
+      border-radius: 40px;
+      background: var(--surface);
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+    .date-item.active {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 10px 20px rgba(122, 92, 255, 0.4);
+    }
+    .date-item .day { font-size: 1.2rem; font-weight: 700; margin-bottom: 2px; }
+    .date-item .month { font-size: 0.75rem; text-transform: uppercase; }
 
-    .scoreboard { display: flex; align-items: center; justify-content: center; gap: 1rem; margin: 1.5rem 0; }
-    .score-team { flex: 1; font-size: 1.2rem; font-weight: bold; }
-    .score-number { font-size: 3rem; font-weight: 900; background: rgba(0,0,0,0.4); padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid var(--border); width: 80px; }
-    .score-vs { font-size: 1rem; color: var(--text-muted); font-weight: bold; }
+    /* Match Cards - Horizontal Restyling */
+    .match-card-container {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      padding: 1.2rem 2rem;
+      margin-bottom: 1rem;
+      transition: transform 0.2s;
+      border: 1px solid var(--border);
+    }
+    .match-card-container:hover { background: var(--surface-hover); }
     
-    .standings-wrapper { margin-bottom: 2rem; }
-    .group-header { font-size: 1.2rem; color: var(--warning); margin-bottom: 0.5rem; border-bottom: 1px dashed var(--border); padding-bottom: 0.3rem;}
-    table { width: 100%; border-collapse: collapse; background: var(--surface); border-radius: var(--radius); overflow: hidden; }
-    th, td { padding: 0.75rem 1rem; text-align: center; border-bottom: 1px solid var(--border); }
-    th { background: rgba(0,0,0,0.3); font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; }
+    .match-card-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .stage-info { width: 100px; font-size: 0.85rem; color: var(--text-muted); font-weight: 600;}
+    
+    .scoreboard-horizontal { 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      flex: 1;
+      gap: 1.5rem; 
+    }
+    
+    .score-team { flex: 1; font-size: 1rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .team-left { text-align: right; }
+    .team-right { text-align: left; }
+    
+    .score-block {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      background: rgba(0,0,0,0.2);
+      padding: 0.4rem 1.2rem;
+      border-radius: 20px;
+      font-weight: 700;
+    }
+    .score-number { font-size: 1.2rem; width: 20px; text-align: center; }
+    .score-vs { font-size: 0.9rem; color: var(--text-muted); }
+    
+    .status-info { width: 80px; text-align: right; }
+    .match-status { font-size: 0.75rem; padding: 0.3rem 0.6rem; border-radius: 6px; font-weight: 700; text-transform: uppercase; display: inline-block;}
+    .status-live { background: rgba(122, 92, 255, 0.2); color: var(--primary); }
+    .status-completed { background: rgba(255,255,255,0.05); color: var(--text-muted); }
+
+    /* Tables & Admin */
+    .standings-wrapper { margin-bottom: 2.5rem; }
+    .group-header { font-size: 1.1rem; color: var(--text-muted); margin-bottom: 1rem; padding-bottom: 0.3rem; text-transform: uppercase; letter-spacing: 1px;}
+    table { width: 100%; border-collapse: separate; border-spacing: 0; background: transparent; }
+    th, td { padding: 1rem; text-align: center; border-bottom: 1px solid var(--border); }
+    th { color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; font-weight: 600; border-bottom: 2px solid var(--border); }
     td:first-child, th:first-child { text-align: left; }
     tr:last-child td { border-bottom: none; }
-    .pts-col { font-weight: bold; color: var(--primary); font-size: 1.1rem; }
+    .pts-col { font-weight: 800; color: var(--primary); font-size: 1.1rem; }
 
-    .admin-controls { display: flex; gap: 0.25rem; }
-    .admin-controls button { padding: 0.25rem 0.5rem; font-size: 0.8rem; }
-    .admin-section { background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: var(--radius); border: 1px solid var(--primary); }
+    .admin-controls { display: flex; gap: 0.5rem; }
+    .admin-controls button { padding: 0.3rem 0.6rem; font-size: 0.8rem; border-radius: 6px;}
+    .admin-section { background: var(--surface); padding: 1.5rem; border-radius: var(--radius); border: 1px solid rgba(122, 92, 255, 0.2); }
     .form-group { display: flex; gap: 1rem; align-items: flex-start; flex-wrap: wrap; margin-top: 1rem; }
     
     .hidden { display: none !important; }
     .flex { display: flex; } .justify-between { justify-content: space-between; } .items-center { align-items: center; }
-    .section-title { font-size: 1.5rem; margin-top: 2rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--border); display: flex; justify-content: space-between; align-items: center;}
+    .section-title { font-size: 1.4rem; margin-top: 2rem; margin-bottom: 1.5rem; font-weight: 700; display: flex; justify-content: space-between; align-items: center;}
 
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: center; z-index: 50; }
-    .modal { background: var(--surface); padding: 2rem; border-radius: var(--radius); width: 100%; max-width: 400px; border: 1px solid var(--primary); }
+    /* Modal */
+    .modal-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 50; border-radius: 30px;}
+    .modal { background: var(--bg-app); padding: 2.5rem; border-radius: var(--radius-lg); width: 100%; max-width: 400px; border: 1px solid var(--border); box-shadow: 0 20px 40px rgba(0,0,0,0.4);}
   </style>
 </head>
 <body>
 
-  <header>
-    <h2>CLUB SI 3V3 Futsal Tournament Score Dashboard</h2>
-    <div>
-      <button id="authBtn" class="btn-outline">Admin Login</button>
+  <div class="app-window">
+    
+    <div class="sidebar">
+      <div class="sidebar-logo">⚽</div>
+      <div class="sidebar-icon active">🏠</div>
+      <div class="sidebar-icon">🏆</div>
+      <div class="sidebar-icon">📊</div>
+      <div class="sidebar-icon" style="margin-top: auto; margin-bottom: 1rem;">⚙️</div>
     </div>
-  </header>
 
-  <div class="container">
-    <div id="adminPanel" class="hidden">
-      <h2 style="color: var(--primary);">Admin Dashboard</h2>
-      <p class="text-muted" style="margin-bottom: 1.5rem;">Manage tournament logic, groups, scores, and players.</p>
-      
-      <div class="grid">
-        <div class="admin-section">
-          <h3>Create Match</h3>
-          <div class="form-group">
-            <div style="flex:1;">
-              <select id="matchStageSelect" style="width:100%; margin-bottom:0.5rem;">
-                <option value="group">Group Stage</option>
-                <option value="semi">Semi-Final</option>
-                <option value="final">Final</option>
-              </select>
-              <select id="matchTeam1Select" style="width:100%;"><option value="">Team 1...</option></select>
+    <div class="main-content">
+      <header>
+        <h2>CLUB SI 3V3 Futsal</h2>
+        <div>
+          <button id="authBtn" class="btn-outline">Admin Login</button>
+        </div>
+      </header>
+
+      <div class="container">
+        
+        <div class="top-banner">
+          <div>
+            <h3 style="color: var(--primary); font-size: 1rem; letter-spacing: 2px; text-transform: uppercase;">Current Event</h3>
+            <h1 style="font-size: 2.5rem; margin: 0.5rem 0;">Season Finals</h1>
+            <p style="color: var(--text-muted); margin-bottom: 1rem;">The ultimate showdown to decide the champion.</p>
+            <button>Read More</button>
+          </div>
+        </div>
+
+        <div id="adminPanel" class="hidden" style="margin-bottom: 3rem;">
+          <h2 style="color: var(--primary); font-size: 1.4rem; margin-bottom: 0.5rem;">Admin Dashboard</h2>
+          <p class="text-muted" style="margin-bottom: 1.5rem; color: var(--text-muted);">Manage tournament logic, groups, scores, and players.</p>
+          
+          <div class="grid">
+            <div class="admin-section">
+              <h3 style="margin-bottom: 1rem;">Create Match</h3>
+              <div class="form-group" style="margin-top: 0;">
+                <div style="flex:1;">
+                  <select id="matchStageSelect" style="width:100%; margin-bottom:0.8rem;">
+                    <option value="group">Group Stage</option>
+                    <option value="semi">Semi-Final</option>
+                    <option value="final">Final</option>
+                  </select>
+                  <select id="matchTeam1Select" style="width:100%;"><option value="">Team 1...</option></select>
+                </div>
+                <div style="padding-top: 2.8rem; font-weight: bold; color: var(--text-muted);">VS</div>
+                <div style="flex:1;">
+                  <br>
+                  <select id="matchTeam2Select" style="width:100%;"><option value="">Team 2...</option></select>
+                </div>
+                <button style="margin-top:1rem; width:100%;" onclick="createMatch()">Start Match</button>
+              </div>
             </div>
-            <div style="padding-top: 2.2rem; font-weight: bold; color: var(--text-muted);">VS</div>
-            <div style="flex:1;">
-              <br>
-              <select id="matchTeam2Select" style="width:100%;"><option value="">Team 2...</option></select>
+
+            <div class="admin-section">
+              <h3 style="margin-bottom: 0.5rem;">Team Management</h3>
+              <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom:0.5rem;">Add a new team to a group.</p>
+              <div class="form-group" style="align-items: center; margin-top:0;">
+                <input type="text" id="newTeamName" placeholder="e.g. Futsal Kings" style="flex:1; min-width:120px;" />
+                <select id="newTeamGroup">
+                  <option value="A">Grp A</option>
+                  <option value="B">Grp B</option>
+                  <option value="C">Grp C</option>
+                  <option value="D">Grp D</option>
+                </select>
+                <button onclick="createTeam()">Add</button>
+              </div>
+              
+              <hr style="border-color: var(--border); margin: 1.2rem 0; border-style: dashed;"/>
+              
+              <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom:0.5rem;">Move existing team.</p>
+              <div class="form-group" style="align-items: center; margin-top:0;">
+                <select id="moveTeamSelect" style="flex:1;"><option value="">Select Team...</option></select>
+                <select id="moveTeamGroup">
+                  <option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option>
+                </select>
+                <button onclick="moveTeamGroup()" class="btn-outline">Move</button>
+              </div>
             </div>
-            <button style="margin-top:2rem; width:100%;" onclick="createMatch()">Start Match</button>
+
+            <div class="admin-section">
+              <h3 style="margin-bottom: 0.5rem;">Register Players</h3>
+              <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom:0.5rem;">Single Player.</p>
+              <div class="form-group" style="align-items: center; margin-top:0; margin-bottom: 1rem;">
+                <select id="singlePlayerTeam" style="flex:1; width: 100%;"><option value="">Team...</option></select>
+                <input type="text" id="spName" placeholder="Name" style="flex:1; min-width:80px;" />
+                <input type="number" id="spJersey" placeholder="#" style="width:60px;" />
+                <button onclick="createSinglePlayer()">+</button>
+              </div>
+
+              <hr style="border-color: var(--border); margin: 1.2rem 0; border-style: dashed;"/>
+
+              <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom:0.5rem;">Batch Import (Name, Jersey)</p>
+              <div class="form-group" style="flex-direction: column; gap:0.5rem; margin-top: 0;">
+                <select id="playerTeamSelect" style="width:100%;"><option value="">Select Team...</option></select>
+                <textarea id="batchPlayersInput" rows="2" style="width:100%;" placeholder="John Doe, 10&#10;Jane Smith, 7"></textarea>
+                <button onclick="batchCreatePlayers()" class="btn-outline" style="width:100%;">Import Players</button>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="admin-section">
-          <h3>Team & Group Management</h3>
-          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom:0.5rem;">Create teams and assign them to a group stage.</p>
-          <div class="form-group" style="align-items: center; margin-top:0;">
-            <input type="text" id="newTeamName" placeholder="e.g. Futsal Kings" style="flex:1; min-width:120px;" />
-            <select id="newTeamGroup">
-              <option value="A">Group A</option>
-              <option value="B">Group B</option>
-              <option value="C">Group C</option>
-              <option value="D">Group D</option>
-            </select>
-            <button onclick="createTeam()">Add Team</button>
-          </div>
-          
-          <hr style="border-color: var(--border); margin: 1rem 0;"/>
-          
-          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom:0.5rem;">Move existing team to a different group.</p>
-          <div class="form-group" style="align-items: center; margin-top:0;">
-            <select id="moveTeamSelect" style="flex:1;"><option value="">Select Team...</option></select>
-            <select id="moveTeamGroup">
-              <option value="A">Group A</option>
-              <option value="B">Group B</option>
-              <option value="C">Group C</option>
-              <option value="D">Group D</option>
-            </select>
-            <button onclick="moveTeamGroup()" class="btn-warning">Move</button>
-          </div>
+        <div style="display:flex; justify-content: space-between; align-items: center; margin-top: 2rem;">
+          <h2 class="section-title" style="margin: 0;">Live Score</h2>
+          <div style="background: var(--surface); padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.9rem; border: 1px solid var(--border);">🗓️ Tournament Days</div>
         </div>
 
-        <div class="admin-section">
-          <h3>Register Players</h3>
-          
-          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom:0.5rem;">Add a single player manually.</p>
-          <div class="form-group" style="align-items: center; margin-top:0; margin-bottom: 1rem;">
-            <select id="singlePlayerTeam" style="flex:1; width: 100%;"><option value="">Team...</option></select>
-            <input type="text" id="spName" placeholder="Player Name" style="flex:1; min-width:100px;" />
-            <input type="number" id="spJersey" placeholder="Jersey #" style="width:70px;" />
-            <button onclick="createSinglePlayer()">Add</button>
-          </div>
+        <div class="date-slider" style="margin-top: 1.5rem;">
+          <div class="date-item"><div class="day">20</div><div class="month">Thu</div></div>
+          <div class="date-item"><div class="day">21</div><div class="month">Fri</div></div>
+          <div class="date-item active"><div class="day">22</div><div class="month">Sat</div></div>
+          <div class="date-item"><div class="day">23</div><div class="month">Sun</div></div>
+          <div class="date-item"><div class="day">24</div><div class="month">Mon</div></div>
+          <div class="date-item"><div class="day">25</div><div class="month">Tue</div></div>
+        </div>
 
-          <hr style="border-color: var(--border); margin: 1rem 0;"/>
+        <div id="matchesGrid" style="margin-bottom: 4rem; display: flex; flex-direction: column; gap: 0.5rem;">
+          <div style="text-align: center; width: 100%; color: var(--text-muted);">Loading matches...</div>
+        </div>
 
-          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom:0.5rem;">Batch Import (Format: Name, Jersey)</p>
-          <div class="form-group" style="flex-direction: column; gap:0.5rem; margin-top: 0;">
-            <select id="playerTeamSelect" style="width:100%;"><option value="">Select Team...</option></select>
-            <textarea id="batchPlayersInput" rows="2" style="width:100%;" placeholder="John Doe, 10&#10;Jane Smith, 7"></textarea>
-            <button onclick="batchCreatePlayers()" style="width:100%;">Import Players</button>
-          </div>
+        <h2 class="section-title">Tournament Standings</h2>
+        <div id="standingsContainer">
+          <div style="text-align: center; color: var(--text-muted);">Loading standings...</div>
+        </div>
+
+        <h2 class="section-title" style="margin-top: 4rem;">Team Rosters</h2>
+        <div id="teamsGrid" class="grid">
+          <div style="text-align: center; width: 100%; color: var(--text-muted);">Loading teams...</div>
         </div>
       </div>
-      <hr style="border-color: var(--border); margin: 2rem 0;"/>
     </div>
 
-    <h2 class="section-title">Tournament Standings</h2>
-    <div id="standingsContainer">
-      <div style="text-align: center; color: var(--text-muted);">Loading standings...</div>
-    </div>
-
-    <h2 class="section-title">Matches Board</h2>
-    <div id="matchesGrid" class="grid" style="margin-bottom: 3rem;">
-      <div style="text-align: center; width: 100%; color: var(--text-muted);">Loading matches...</div>
-    </div>
-
-    <h2 class="section-title">Team Rosters</h2>
-    <div id="teamsGrid" class="grid">
-      <div style="text-align: center; width: 100%; color: var(--text-muted);">Loading teams...</div>
-    </div>
-  </div>
-
-  <div id="loginModal" class="modal-overlay hidden">
-    <div class="modal">
-      <h3 style="margin-bottom: 1rem;">Admin Access</h3>
-      <input type="password" id="adminPassInput" placeholder="Enter PIN" style="width: 100%; margin-bottom: 1rem; font-size: 1.2rem; text-align: center;" />
-      <div class="flex justify-between">
-        <button class="btn-outline" onclick="toggleModal(false)">Cancel</button>
-        <button onclick="attemptLogin()">Unlock</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="editPlayerModal" class="modal-overlay hidden">
-    <div class="modal">
-      <h3 style="margin-bottom: 1rem; color: var(--warning);">Edit Player Stats</h3>
-      <input type="hidden" id="editPlayerId" />
-      <div class="form-group" style="flex-direction:column; gap:0.5rem; margin-top:0;">
-        <div style="display:flex; justify-content:space-between; width:100%;">
-          <label style="width:40%;">Name</label> 
-          <input type="text" id="epName" style="width:60%">
-        </div>
-        <div style="display:flex; justify-content:space-between; width:100%;">
-          <label style="width:40%;">Jersey Number</label> 
-          <input type="number" id="epJersey" style="width:60%">
-        </div>
-        <div style="display:flex; justify-content:space-between; width:100%;">
-          <label style="width:40%;">Goals ⚽</label> 
-          <input type="number" id="epGoals" style="width:60%">
-        </div>
-        <div style="display:flex; justify-content:space-between; width:100%;">
-          <label style="width:40%;">Yellow Cards 🟨</label> 
-          <input type="number" id="epYellow" style="width:60%">
-        </div>
-        <div style="display:flex; justify-content:space-between; width:100%;">
-          <label style="width:40%;">Red Cards 🟥</label> 
-          <input type="number" id="epRed" style="width:60%">
+    <div id="loginModal" class="modal-overlay hidden">
+      <div class="modal">
+        <h3 style="margin-bottom: 1.5rem; text-align: center; font-size: 1.5rem;">Admin Access</h3>
+        <input type="password" id="adminPassInput" placeholder="Enter PIN" style="width: 100%; margin-bottom: 1.5rem; font-size: 1.2rem; text-align: center; padding: 1rem;" />
+        <div class="flex justify-between">
+          <button class="btn-outline" onclick="toggleModal(false)">Cancel</button>
+          <button onclick="attemptLogin()" style="width: 60%;">Unlock</button>
         </div>
       </div>
-      <div class="flex justify-between" style="margin-top:1.5rem;">
-        <button class="btn-outline" onclick="toggleEditPlayerModal(false)">Cancel</button>
-        <button class="btn-success" onclick="savePlayerEdit()">Save Changes</button>
+    </div>
+
+    <div id="editPlayerModal" class="modal-overlay hidden">
+      <div class="modal">
+        <h3 style="margin-bottom: 1.5rem; color: var(--primary);">Edit Player Stats</h3>
+        <input type="hidden" id="editPlayerId" />
+        <div class="form-group" style="flex-direction:column; gap:1rem; margin-top:0;">
+          <div style="display:flex; justify-content:space-between; width:100%; align-items: center;">
+            <label style="width:40%; color: var(--text-muted);">Name</label> 
+            <input type="text" id="epName" style="width:60%">
+          </div>
+          <div style="display:flex; justify-content:space-between; width:100%; align-items: center;">
+            <label style="width:40%; color: var(--text-muted);">Jersey #</label> 
+            <input type="number" id="epJersey" style="width:60%">
+          </div>
+          <div style="display:flex; justify-content:space-between; width:100%; align-items: center;">
+            <label style="width:40%; color: var(--text-muted);">Goals ⚽</label> 
+            <input type="number" id="epGoals" style="width:60%">
+          </div>
+          <div style="display:flex; justify-content:space-between; width:100%; align-items: center;">
+            <label style="width:40%; color: var(--text-muted);">Yellow 🟨</label> 
+            <input type="number" id="epYellow" style="width:60%">
+          </div>
+          <div style="display:flex; justify-content:space-between; width:100%; align-items: center;">
+            <label style="width:40%; color: var(--text-muted);">Red 🟥</label> 
+            <input type="number" id="epRed" style="width:60%">
+          </div>
+        </div>
+        <div class="flex justify-between" style="margin-top:2rem;">
+          <button class="btn-outline" onclick="toggleEditPlayerModal(false)">Cancel</button>
+          <button onclick="savePlayerEdit()">Save Changes</button>
+        </div>
       </div>
     </div>
-  </div>
 
-<script>
+  </div> <script>
   let state = { teams: [], players: [], matches: [], standings: {}, isAdmin: false, adminToken: '' };
 
   async function loadData() {
@@ -292,22 +473,21 @@
       input.focus();
     } else {
       m.classList.add('hidden');
-      input.value = ''; // FIX: Ensures the input is wiped if they close without logging in
+      input.value = '';
     }
   }
 
   function attemptLogin() {
     const pass = document.getElementById('adminPassInput').value;
-    // Note: Default is '0000', change via environment variables in production
     if (pass === '0000') {
       state.isAdmin = true; state.adminToken = pass;
       document.getElementById('authBtn').textContent = 'Exit Admin';
       document.getElementById('adminPanel').classList.remove('hidden');
-      toggleModal(false); // Modal closes and wipes the input correctly
+      toggleModal(false);
       updateAdminDropdowns(); renderDashboard();
     } else { 
       alert('Invalid Password'); 
-      document.getElementById('adminPassInput').value = ''; // FIX: Wipe input on failure
+      document.getElementById('adminPassInput').value = '';
     }
   }
 
@@ -462,15 +642,15 @@
     const groupNames = Object.keys(state.standings).sort();
     
     if (groupNames.length === 0) {
-      container.innerHTML = `<div style="text-align: center; width: 100%; color: var(--text-muted); background:var(--surface); padding:2rem; border-radius:var(--radius);">No group data yet.</div>`;
+      container.innerHTML = `<div style="text-align: center; color: var(--text-muted); background:var(--surface); padding:2rem; border-radius:var(--radius-lg); border:1px solid var(--border);">No group data yet.</div>`;
       return;
     }
 
-    let html = '';
+    let html = '<div class="grid">';
     groupNames.forEach(groupName => {
       const teams = state.standings[groupName];
       html += `
-        <div class="standings-wrapper">
+        <div class="standings-wrapper card">
           <h3 class="group-header">Group ${groupName}</h3>
           <div style="overflow-x:auto;">
             <table>
@@ -479,7 +659,6 @@
                   <th>Team</th>
                   <th>P</th>
                   <th>W</th>
-                  <th>D</th>
                   <th>L</th>
                   <th>GD</th>
                   <th>Pts</th>
@@ -487,16 +666,14 @@
               </thead>
               <tbody>
                 ${teams.map((s, index) => {
-                  const advanceThreshold = groupNames.length > 1 ? 2 : 4;
-                  const isAdvancing = index < advanceThreshold ? 'border-left: 3px solid var(--primary);' : '';
+                  const isAdvancing = index < 2 ? 'border-left: 3px solid var(--primary); padding-left: 10px;' : 'padding-left: 13px;';
                   return `
                     <tr>
-                      <td style="font-weight:bold; ${isAdvancing}">
-                        <span style="color:var(--text-muted); margin-right:8px;">${index+1}.</span>${s.name}
+                      <td style="font-weight:600; ${isAdvancing}">
+                        <span style="color:var(--text-muted); margin-right:8px; font-weight:normal; font-size: 0.8rem;">${index+1}</span>${s.name}
                       </td>
                       <td>${s.played}</td>
                       <td>${s.won}</td>
-                      <td>${s.drawn}</td>
                       <td>${s.lost}</td>
                       <td>${s.gd > 0 ? '+'+s.gd : s.gd}</td>
                       <td class="pts-col">${s.pts}</td>
@@ -509,55 +686,62 @@
         </div>
       `;
     });
-    
+    html += '</div>';
     container.innerHTML = html;
   }
 
   function renderMatches() {
     const grid = document.getElementById('matchesGrid');
     if (state.matches.length === 0) {
-      grid.innerHTML = `<div style="text-align: center; width: 100%; color: var(--text-muted); background:var(--surface); padding:2rem; border-radius:var(--radius);">No matches scheduled.</div>`;
+      grid.innerHTML = `<div style="text-align: center; color: var(--text-muted); background:var(--surface); padding:2rem; border-radius:var(--radius-lg); border: 1px solid var(--border);">No matches scheduled.</div>`;
       return;
     }
 
     grid.innerHTML = state.matches.map(match => {
       const isLive = match.status === 'live';
       const badgeClass = isLive ? 'status-live' : 'status-completed';
-      const badgeText = isLive ? 'LIVE' : 'FINAL';
+      const badgeText = isLive ? 'LIVE' : 'FT';
       const stageFormat = match.stage === 'semi' ? 'Semi-Final' : match.stage === 'final' ? 'Final' : 'Group Stage';
 
       let adminHTML = '';
       if (state.isAdmin) {
         adminHTML = `
-          <div style="margin-top: 1.5rem; border-top: 1px solid var(--border); padding-top: 1rem;">
-            <div style="display:flex; justify-content:space-between; margin-bottom: 1rem;">
+          <div style="margin-top: 1.2rem; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 1.2rem;">
+            <div style="display:flex; justify-content:center; align-items:center; gap: 2rem; margin-bottom: 1rem;">
               <div class="admin-controls">
                 <button class="btn-outline" onclick="matchAction(${match.id}, 't1_sub')">-</button>
                 <button onclick="matchAction(${match.id}, 't1_add')">+ Goal</button>
               </div>
+              <div style="font-size:0.8rem; color:var(--text-muted);">Adjust Score</div>
               <div class="admin-controls">
                 <button onclick="matchAction(${match.id}, 't2_add')">+ Goal</button>
                 <button class="btn-outline" onclick="matchAction(${match.id}, 't2_sub')">-</button>
               </div>
             </div>
-            <div style="display:flex; justify-content:space-between;">
-              <button class="btn-danger btn-outline" style="font-size:0.8rem; padding:0.2rem 0.5rem;" onclick="deleteMatch(${match.id})">Delete Match</button>
-              ${isLive ? `<button class="btn-success" style="font-size:0.8rem; padding:0.2rem 0.5rem;" onclick="matchAction(${match.id}, 'complete')">End Match</button>` : `<span style="font-size: 0.8rem; color: var(--text-muted);">Match Ended</span>`}
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <button class="btn-danger btn-outline" style="font-size:0.8rem; padding:0.4rem 0.8rem;" onclick="deleteMatch(${match.id})">Delete Match</button>
+              ${isLive ? `<button class="btn-outline" style="font-size:0.8rem; padding:0.4rem 0.8rem; color: var(--success); border-color: var(--success);" onclick="matchAction(${match.id}, 'complete')">End Match</button>` : `<span style="font-size: 0.8rem; color: var(--text-muted);">Match Concluded</span>`}
             </div>
           </div>
         `;
       }
 
       return `
-        <div class="card match-card" data-stage="${match.stage}">
-          <div class="stage-badge">${stageFormat}</div>
-          <div class="match-status ${badgeClass}">${badgeText}</div>
-          <div class="scoreboard">
-            <div class="score-team">${getTeamName(match.team1_id)}</div>
-            <div class="score-number">${match.team1_score}</div>
-            <div class="score-vs">VS</div>
-            <div class="score-number">${match.team2_score}</div>
-            <div class="score-team">${getTeamName(match.team2_id)}</div>
+        <div class="match-card-container">
+          <div class="match-card-row">
+            <div class="stage-info">${stageFormat}</div>
+            <div class="scoreboard-horizontal">
+              <div class="score-team team-left">${getTeamName(match.team1_id)}</div>
+              <div class="score-block">
+                <div class="score-number">${match.team1_score}</div>
+                <div class="score-vs">-</div>
+                <div class="score-number">${match.team2_score}</div>
+              </div>
+              <div class="score-team team-right">${getTeamName(match.team2_id)}</div>
+            </div>
+            <div class="status-info">
+              <span class="match-status ${badgeClass}">${badgeText}</span>
+            </div>
           </div>
           ${adminHTML}
         </div>
@@ -568,7 +752,7 @@
   function renderTeams() {
     const grid = document.getElementById('teamsGrid');
     if (state.teams.length === 0) {
-      grid.innerHTML = `<div style="text-align: center; width: 100%; color: var(--text-muted); background:var(--surface); padding:2rem; border-radius:var(--radius);">No teams registered.</div>`;
+      grid.innerHTML = `<div style="text-align: center; width: 100%; color: var(--text-muted); background:var(--surface); padding:2rem; border-radius:var(--radius-lg); border:1px solid var(--border);">No teams registered.</div>`;
       return;
     }
 
@@ -576,43 +760,43 @@
       const teamPlayers = state.players.filter(p => p.team_id === team.id);
       
       let html = `
-        <div class="card" style="padding:1rem;">
-          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:0.5rem; margin-bottom:0.5rem;">
+        <div class="card" style="padding:1.5rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:1rem; margin-bottom:1rem;">
             <div>
               <h3 style="font-size: 1.2rem; margin:0; display:inline-block;">${team.name}</h3>
-              <span style="font-size:0.75rem; color:var(--warning); margin-left:8px; border:1px solid var(--warning); padding:1px 4px; border-radius:4px;">Grp ${team.group_name || 'A'}</span>
+              <span style="font-size:0.75rem; color:var(--text); background: var(--primary); margin-left:8px; padding:2px 8px; border-radius:6px;">Grp ${team.group_name || 'A'}</span>
             </div>
-            ${state.isAdmin ? `<button class="btn-danger btn-outline" style="padding:0.2rem 0.5rem; font-size:0.7rem;" onclick="deleteTeam(${team.id})">Delete Team</button>` : ''}
+            ${state.isAdmin ? `<button class="btn-danger btn-outline" style="padding:0.3rem 0.6rem; font-size:0.7rem;" onclick="deleteTeam(${team.id})">Delete</button>` : ''}
           </div>
-          <div style="display:flex; flex-direction:column; gap:0.5rem;">
+          <div style="display:flex; flex-direction:column; gap:0.6rem;">
       `;
 
       if (teamPlayers.length === 0) {
-        html += `<div class="text-muted" style="font-size:0.9rem;">No players assigned</div>`;
+        html += `<div class="text-muted" style="font-size:0.9rem; color: var(--text-muted);">No players assigned</div>`;
       } else {
         teamPlayers.forEach(p => {
           html += `
-            <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.2); padding:0.5rem; border-radius:6px;">
-              <div style="display:flex; align-items:center; gap:0.5rem;">
-                <div style="background:var(--primary); color:#000; width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:bold;">${p.jersey_number}</div>
+            <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.15); padding:0.8rem; border-radius:10px; border: 1px solid var(--border);">
+              <div style="display:flex; align-items:center; gap:0.8rem;">
+                <div style="background:var(--surface-hover); color:var(--text); width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:0.85rem; font-weight:700;">${p.jersey_number}</div>
                 <div>
-                  <span style="font-weight:600; font-size:0.9rem;">${p.name}</span>
+                  <span style="font-weight:600; font-size:0.95rem;">${p.name}</span>
                   ${state.isAdmin ? `
-                    <button class="btn-outline" style="font-size:0.6rem; padding:1px 4px; margin-left:6px;" onclick="openEditPlayerModal(${p.id})">✏️</button>
-                    <a href="#" style="font-size:0.7rem; color:var(--danger); text-decoration:none; margin-left:4px;" onclick="deletePlayer(${p.id})">❌</a>
+                    <button class="btn-outline" style="font-size:0.6rem; padding:2px 6px; margin-left:6px; border:none;" onclick="openEditPlayerModal(${p.id})">✏️</button>
+                    <a href="#" style="font-size:0.7rem; text-decoration:none; margin-left:2px;" onclick="deletePlayer(${p.id})">❌</a>
                   ` : ''}
                 </div>
               </div>
               <div style="display:flex; gap:4px; align-items:center;">
                 ${state.isAdmin ? `
-                  <button style="font-size:0.7rem; padding:2px 4px; background:var(--surface);" onclick="updateStat(${p.id}, 'goal')">⚽</button>
-                  <button style="font-size:0.7rem; padding:2px 4px; background:var(--surface);" onclick="updateStat(${p.id}, 'yellow')">🟨</button>
-                  <button style="font-size:0.7rem; padding:2px 4px; background:var(--surface);" onclick="updateStat(${p.id}, 'red')">🟥</button>
+                  <button class="btn-outline" style="font-size:0.7rem; padding:4px; border:none;" onclick="updateStat(${p.id}, 'goal')">⚽</button>
+                  <button class="btn-outline" style="font-size:0.7rem; padding:4px; border:none;" onclick="updateStat(${p.id}, 'yellow')">🟨</button>
+                  <button class="btn-outline" style="font-size:0.7rem; padding:4px; border:none;" onclick="updateStat(${p.id}, 'red')">🟥</button>
                 ` : ''}
                 <div style="display:flex; gap:4px; margin-left:8px;">
-                  ${p.goals > 0 ? `<span style="background:#e2e8f0; color:#000; font-size:0.7rem; padding:2px 6px; border-radius:4px; font-weight:bold;">${p.goals} ⚽</span>` : ''}
-                  ${p.yellow_cards > 0 ? `<span style="background:var(--warning); color:#000; font-size:0.7rem; padding:2px 6px; border-radius:4px; font-weight:bold;">${p.yellow_cards} 🟨</span>` : ''}
-                  ${p.red_cards > 0 ? `<span style="background:var(--danger); color:#fff; font-size:0.7rem; padding:2px 6px; border-radius:4px; font-weight:bold;">${p.red_cards} 🟥</span>` : ''}
+                  ${p.goals > 0 ? `<span style="background:var(--primary); color:#fff; font-size:0.75rem; padding:2px 6px; border-radius:6px; font-weight:700;">${p.goals} ⚽</span>` : ''}
+                  ${p.yellow_cards > 0 ? `<span style="background:var(--warning); color:#000; font-size:0.75rem; padding:2px 6px; border-radius:6px; font-weight:700;">${p.yellow_cards} 🟨</span>` : ''}
+                  ${p.red_cards > 0 ? `<span style="background:var(--danger); color:#fff; font-size:0.75rem; padding:2px 6px; border-radius:6px; font-weight:700;">${p.red_cards} 🟥</span>` : ''}
                 </div>
               </div>
             </div>
