@@ -3,78 +3,317 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>VPS Fetch/Write Demo</title>
+  <title>3v3 Futsal Tournament</title>
   <style>
-    body{font-family:system-ui,Arial;padding:2rem;max-width:760px;margin:auto;line-height:1.5}
-    .card{padding:1rem;border:1px solid #ddd;border-radius:12px;margin:1rem 0}
-    .row{margin:.75rem 0}
-    button{padding:.6rem 1rem;cursor:pointer}
-    .ok{color:green}.err{color:#b00020}
-    pre{background:#fafafa;border:1px solid #eee;padding:1rem;border-radius:8px;overflow:auto}
+    :root {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --surface-hover: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --danger: #ef4444;
+      --warning: #eab308;
+      --success: #22c55e;
+      --border: #334155;
+      --radius: 12px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; padding-bottom: 2rem; }
+    header { background: var(--surface); padding: 1rem 2rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; }
+    .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+    
+    button { background: var(--primary); color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 600; transition: background 0.2s; }
+    button:hover { background: var(--primary-hover); }
+    button.btn-danger { background: var(--danger); }
+    button.btn-warning { background: var(--warning); color: #000; }
+    button.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+    button.btn-outline:hover { background: var(--surface-hover); }
+
+    input, select { background: var(--bg); color: var(--text); border: 1px solid var(--border); padding: 0.5rem; border-radius: 6px; outline: none; }
+    input:focus, select:focus { border-color: var(--primary); }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+    
+    .team-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+    .team-score { font-size: 2rem; font-weight: bold; color: var(--success); }
+    
+    .player-list { list-style: none; }
+    .player-item { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid var(--border); }
+    .player-item:last-child { border-bottom: none; }
+    .player-info { display: flex; align-items: center; gap: 0.5rem; }
+    .jersey { background: var(--bg); border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: bold; border: 1px solid var(--border); }
+    
+    .stats { display: flex; gap: 0.5rem; align-items: center; }
+    .stat-badge { display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 4px; font-weight: bold; font-size: 0.8rem; }
+    .bg-goal { background: #cbd5e1; color: #000; }
+    .bg-yellow { background: var(--warning); color: #000; }
+    .bg-red { background: var(--danger); color: #fff; }
+
+    .admin-controls { display: flex; gap: 0.25rem; }
+    .admin-controls button { padding: 0.25rem 0.5rem; font-size: 0.8rem; }
+
+    .admin-section { background: var(--surface); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 2rem; border: 1px solid var(--border); }
+    .form-group { display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap; margin-top: 1rem; }
+    
+    .hidden { display: none !important; }
+    .flex { display: flex; } .justify-between { justify-content: space-between; } .items-center { align-items: center; }
+
+    /* Modal */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 50; }
+    .modal { background: var(--surface); padding: 2rem; border-radius: var(--radius); width: 100%; max-width: 400px; }
   </style>
-<script defer src="https://analytics.myvpsdemo.cloud/script.js" data-website-id="e969b131-9fa9-433d-b387-86aaf51a4525"></script>
 </head>
 <body>
-  <h1>VPS Fetch/Write Demo</h1>
-  <p>This page is served by Node.js on your VPS. Use the buttons to call real API routes.</p>
-  <div class="card">
-    <h3>Read: Fetch Data (GET)</h3>
-    <div class="row">
-      <button id="getBtn">Fetch Data</button>
-      <span id="getMsg"></span>
+
+  <header>
+    <h2>⚽ Futsal 3v3 Dashboard</h2>
+    <div>
+      <button id="authBtn" class="btn-outline">Admin Login</button>
+    </div>
+  </header>
+
+  <div class="container">
+    <div id="adminPanel" class="hidden">
+      <h2>Admin Control Panel</h2>
+      <p class="text-muted" style="margin-bottom: 1.5rem;">Manage teams and players.</p>
+      
+      <div class="grid">
+        <div class="admin-section">
+          <h3>Create New Team</h3>
+          <div class="form-group">
+            <div>
+              <label style="display:block; font-size:0.85rem; margin-bottom:0.25rem;">Team Name</label>
+              <input type="text" id="newTeamName" placeholder="e.g. Futsal Kings" />
+            </div>
+            <button onclick="createTeam()">Add Team</button>
+          </div>
+        </div>
+
+        <div class="admin-section">
+          <h3>Register Player</h3>
+          <div class="form-group">
+            <div>
+              <label style="display:block; font-size:0.85rem; margin-bottom:0.25rem;">Team</label>
+              <select id="playerTeamSelect"><option value="">Select Team...</option></select>
+            </div>
+            <div>
+              <label style="display:block; font-size:0.85rem; margin-bottom:0.25rem;">Player Name</label>
+              <input type="text" id="newPlayerName" placeholder="Player Name" style="width: 140px;" />
+            </div>
+            <div>
+              <label style="display:block; font-size:0.85rem; margin-bottom:0.25rem;">Jersey #</label>
+              <input type="number" id="newPlayerNumber" placeholder="10" style="width: 60px;" />
+            </div>
+            <button onclick="createPlayer()">Add</button>
+          </div>
+        </div>
+      </div>
+      <hr style="border-color: var(--border); margin: 2rem 0;"/>
+    </div>
+
+    <div id="teamsGrid" class="grid">
+      <div style="text-align: center; width: 100%; color: var(--text-muted);">Loading tournament data...</div>
     </div>
   </div>
-  <div class="card">
-    <h3>Write: Save an Event (POST)</h3>
-    <div class="row">
-      <button id="writeBtn">Write Data</button>
-      <span id="writeMsg"></span>
+
+  <div id="loginModal" class="modal-overlay hidden">
+    <div class="modal">
+      <h3 style="margin-bottom: 1rem;">Admin Access</h3>
+      <input type="password" id="adminPassInput" placeholder="Enter PIN (0000)" style="width: 100%; margin-bottom: 1rem; font-size: 1.2rem; text-align: center;" />
+      <div class="flex justify-between">
+        <button class="btn-outline" onclick="toggleModal(false)">Cancel</button>
+        <button onclick="attemptLogin()">Unlock</button>
+      </div>
     </div>
   </div>
-  <div class="card">
-    <h3>Metrics (Live)</h3>
-    <pre id="metricsBox">Loading…</pre>
-  </div>
+
 <script>
-const $ = (id)=>document.getElementById(id);
-async function getJSON(url, opts){ const r=await fetch(url,opts); if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); }
-$('getBtn').onclick = async () => {
-  try {
-    const data = await getJSON('/api/time');
-    $('getMsg').textContent = 'Server time: ' + data.time;
-    $('getMsg').className = 'ok';
-    window.umami?.track('fetch_data');
-  } catch {
-    $('getMsg').textContent = 'Error';
-    $('getMsg').className = 'err';
+  let state = { teams: [], players: [], isAdmin: false, adminToken: '' };
+
+  // --- Initialization ---
+  async function loadData() {
+    try {
+      const res = await fetch('/api/dashboard');
+      const data = await res.json();
+      if (data.ok) {
+        state.teams = data.teams;
+        state.players = data.players;
+        renderDashboard();
+        if(state.isAdmin) updateAdminDropdowns();
+      }
+    } catch (e) {
+      console.error('Failed to load data', e);
+    }
   }
-};
-$('writeBtn').onclick = async () => {
-  try {
-    const data = await getJSON('/api/demo-write', { method:'POST' });
-    $('writeMsg').textContent = 'Writes so far: ' + data.total;
-    $('writeMsg').className = 'ok';
-    window.umami?.track('write_data');
-    loadMetrics();
-  } catch {
-    $('writeMsg').textContent = 'Error';
-    $('writeMsg').className = 'err';
+
+  // --- Admin Auth ---
+  document.getElementById('authBtn').onclick = () => {
+    if (state.isAdmin) {
+      state.isAdmin = false;
+      state.adminToken = '';
+      document.getElementById('authBtn').textContent = 'Admin Login';
+      document.getElementById('adminPanel').classList.add('hidden');
+      renderDashboard();
+    } else {
+      toggleModal(true);
+    }
+  };
+
+  function toggleModal(show) {
+    const m = document.getElementById('loginModal');
+    show ? m.classList.remove('hidden') : m.classList.add('hidden');
+    if (show) document.getElementById('adminPassInput').focus();
   }
-};
-async function loadMetrics(){
-  try {
-    const m = await getJSON('/api/metrics');
-    $('metricsBox').textContent = JSON.stringify(m, null, 2);
-  } catch {
-    $('metricsBox').textContent = 'Error loading metrics';
+
+  function attemptLogin() {
+    const pass = document.getElementById('adminPassInput').value;
+    if (pass === '0000') {
+      state.isAdmin = true;
+      state.adminToken = pass;
+      document.getElementById('authBtn').textContent = 'Exit Admin';
+      document.getElementById('adminPanel').classList.remove('hidden');
+      document.getElementById('adminPassInput').value = '';
+      toggleModal(false);
+      updateAdminDropdowns();
+      renderDashboard(); // Re-render to show admin buttons
+    } else {
+      alert('Invalid Password');
+    }
   }
-}
-loadMetrics();
+
+  // --- API Wrappers ---
+  async function apiCall(url, method, body = null) {
+    const headers = { 'Content-Type': 'application/json' };
+    if (state.isAdmin) headers['x-admin-pass'] = state.adminToken;
+    const opts = { method, headers };
+    if (body) opts.body = JSON.stringify(body);
+    
+    const res = await fetch(url, opts);
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error);
+    return data;
+  }
+
+  // --- Actions ---
+  async function createTeam() {
+    const input = document.getElementById('newTeamName');
+    if (!input.value) return;
+    try {
+      await apiCall('/api/teams', 'POST', { name: input.value });
+      input.value = '';
+      loadData();
+    } catch(e) { alert(e.message); }
+  }
+
+  async function deleteTeam(id) {
+    if (!confirm('Delete team and all its players?')) return;
+    try { await apiCall(`/api/teams/${id}`, 'DELETE'); loadData(); } catch(e) { alert(e.message); }
+  }
+
+  async function createPlayer() {
+    const tId = document.getElementById('playerTeamSelect').value;
+    const name = document.getElementById('newPlayerName').value;
+    const num = document.getElementById('newPlayerNumber').value;
+    if (!tId || !name) return alert('Select team and enter player name');
+    try {
+      await apiCall('/api/players', 'POST', { team_id: tId, name, jersey_number: num });
+      document.getElementById('newPlayerName').value = '';
+      document.getElementById('newPlayerNumber').value = '';
+      loadData();
+    } catch(e) { alert(e.message); }
+  }
+
+  async function deletePlayer(id) {
+    if (!confirm('Remove player?')) return;
+    try { await apiCall(`/api/players/${id}`, 'DELETE'); loadData(); } catch(e) { alert(e.message); }
+  }
+
+  async function updateStat(playerId, action) {
+    try { await apiCall(`/api/players/${playerId}/stats`, 'POST', { action }); loadData(); } 
+    catch(e) { alert(e.message); }
+  }
+
+  // --- Renderers ---
+  function updateAdminDropdowns() {
+    const sel = document.getElementById('playerTeamSelect');
+    sel.innerHTML = '<option value="">Select Team...</option>';
+    state.teams.forEach(t => {
+      sel.innerHTML += `<option value="${t.id}">${t.name}</option>`;
+    });
+  }
+
+  function renderDashboard() {
+    const grid = document.getElementById('teamsGrid');
+    grid.innerHTML = '';
+
+    if (state.teams.length === 0) {
+      grid.innerHTML = `<div style="text-align: center; width: 100%; color: var(--text-muted);">No teams registered yet.</div>`;
+      return;
+    }
+
+    state.teams.forEach(team => {
+      // Calculate Team Score (Sum of player goals)
+      const teamPlayers = state.players.filter(p => p.team_id === team.id);
+      const teamScore = teamPlayers.reduce((acc, p) => acc + (p.goals || 0), 0);
+
+      const card = document.createElement('div');
+      card.className = 'card';
+      
+      // Team Header
+      let headerHTML = `
+        <div class="team-header">
+          <div>
+            <h3 style="font-size: 1.4rem;">${team.name}</h3>
+            ${state.isAdmin ? `<button class="btn-danger" style="padding:0.2rem 0.5rem; font-size:0.7rem; margin-top:0.3rem;" onclick="deleteTeam(${team.id})">Delete Team</button>` : ''}
+          </div>
+          <div class="team-score">${teamScore}</div>
+        </div>
+        <ul class="player-list">
+      `;
+
+      // Players List
+      if (teamPlayers.length === 0) {
+        headerHTML += `<li class="text-muted" style="font-size:0.9rem;">No players assigned</li>`;
+      } else {
+        teamPlayers.forEach(p => {
+          headerHTML += `
+            <li class="player-item">
+              <div class="player-info">
+                <div class="jersey">${p.jersey_number}</div>
+                <div>
+                  <strong>${p.name}</strong>
+                  ${state.isAdmin ? `<br><a href="#" style="font-size:0.7rem; color:var(--danger); text-decoration:none;" onclick="deletePlayer(${p.id})">Remove</a>` : ''}
+                </div>
+              </div>
+              <div class="stats">
+                ${state.isAdmin ? `
+                  <div class="admin-controls">
+                    <button class="btn-outline" onclick="updateStat(${p.id}, 'undo_goal')">-</button>
+                    <button onclick="updateStat(${p.id}, 'goal')">+ ⚽</button>
+                    <button class="btn-warning" onclick="updateStat(${p.id}, 'yellow')">+ 🟨</button>
+                    <button class="btn-danger" onclick="updateStat(${p.id}, 'red')">+ 🟥</button>
+                  </div>
+                ` : ''}
+                ${p.goals > 0 ? `<div class="stat-badge bg-goal" title="Goals">${p.goals}</div>` : ''}
+                ${p.yellow_cards > 0 ? `<div class="stat-badge bg-yellow" title="Yellow Cards">${p.yellow_cards}</div>` : ''}
+                ${p.red_cards > 0 ? `<div class="stat-badge bg-red" title="Red Cards">${p.red_cards}</div>` : ''}
+              </div>
+            </li>
+          `;
+        });
+      }
+
+      headerHTML += `</ul>`;
+      card.innerHTML = headerHTML;
+      grid.appendChild(card);
+    });
+  }
+
+  // Initial load
+  loadData();
 </script>
 </body>
 </html>
-
-
-
-
-
