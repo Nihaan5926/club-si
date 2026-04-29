@@ -11,58 +11,74 @@
 
   <style>
     :root {
-      /* Light & Sporty Theme Colors */
-      --bg-base: #f8fafc;
-      --surface: #ffffff;
-      --surface-hover: #f1f5f9;
+      /* Glassmorphism Light Theme UI over Dark Background */
+      --surface: rgba(255, 255, 255, 0.92); 
+      --surface-hover: rgba(255, 255, 255, 0.98);
       --text: #0f172a;
-      --text-muted: #64748b;
+      --text-muted: #475569;
       --primary: #059669; /* Emerald */
       --primary-hover: #047857;
       --danger: #e11d48; /* Crimson */
       --warning: #ea580c; /* Deep Orange */
       --success: #2563eb; /* Royal Blue */
-      --border: #e2e8f0;
+      --border: rgba(148, 163, 184, 0.3);
       --border-focus: #94a3b8;
       --radius: 12px;
-      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-      --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+      --shadow-hover: 0 12px 40px 0 rgba(0, 0, 0, 0.4);
     }
     
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
+    /* ====================================
+      LIVE STARRY NIGHT BACKGROUND 
+      ====================================
+    */
     body { 
       font-family: 'Inter', system-ui, sans-serif; 
       color: var(--text); 
       line-height: 1.5; 
       padding-bottom: 3rem;
-      background-color: var(--bg-base);
       position: relative;
       overflow-x: hidden;
+      /* Deep space gradient */
+      background-color: #0b0f19;
+      background-image: radial-gradient(circle at top right, #1e293b 0%, #06080d 100%);
+      background-attachment: fixed;
     }
     
-    /* Live Background Animation - Speed Stripes */
-    @keyframes moveStripes {
-      0% { background-position: 0 0; }
-      100% { background-position: 113px 113px; }
+    /* Parallax Star Layer 1 */
+    body::before {
+      content: ""; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: -2;
+      background: transparent;
+      background-image: 
+        radial-gradient(1.5px 1.5px at 25px 5px, #fff, transparent),
+        radial-gradient(1.5px 1.5px at 50px 25px, rgba(255,255,255,0.8), transparent),
+        radial-gradient(1px 1px at 125px 20px, #fff, transparent),
+        radial-gradient(2px 2px at 50px 75px, rgba(255,255,255,0.9), transparent),
+        radial-gradient(2px 2px at 15px 125px, #fff, transparent),
+        radial-gradient(2.5px 2.5px at 110px 140px, rgba(255,255,255,0.7), transparent);
+      background-size: 200px 200px;
+      animation: stardrift 60s linear infinite;
     }
 
-    body::before {
-      content: "";
-      position: fixed;
-      top: -50%; left: -50%; right: -50%; bottom: -50%;
-      background-image: repeating-linear-gradient(
-        -45deg,
-        rgba(0, 0, 0, 0.015),
-        rgba(0, 0, 0, 0.015) 10px,
-        transparent 10px,
-        transparent 20px
-      );
-      background-size: 113px 113px;
-      animation: moveStripes 8s linear infinite;
-      z-index: -1;
-      pointer-events: none;
+    /* Parallax Star Layer 2 */
+    body::after {
+      content: ""; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: -1;
+      background: transparent;
+      background-image: 
+        radial-gradient(1.5px 1.5px at 75px 125px, #fff, transparent),
+        radial-gradient(2px 2px at 100px 75px, rgba(255,255,255,0.8), transparent),
+        radial-gradient(2.5px 2.5px at 199px 100px, rgba(255,255,255,0.9), transparent),
+        radial-gradient(1.5px 1.5px at 20px 50px, #fff, transparent),
+        radial-gradient(3px 3px at 160px 20px, rgba(255,255,255,0.6), transparent);
+      background-size: 300px 300px;
+      animation: stardrift2 90s linear infinite;
     }
+
+    @keyframes stardrift { 0% { background-position: 0 0; } 100% { background-position: 200px 200px; } }
+    @keyframes stardrift2 { 0% { background-position: 0 0; } 100% { background-position: -300px 300px; } }
+
 
     /* Sporty Headers */
     h1, h2, h3, .stage-badge, .match-status, th {
@@ -72,13 +88,14 @@
     }
 
     header { 
-      background: rgba(255, 255, 255, 0.95); 
-      backdrop-filter: blur(10px);
+      background: rgba(255, 255, 255, 0.85); 
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       padding: 1rem 2rem; 
       border-bottom: 3px solid var(--primary); 
       display: flex; justify-content: space-between; align-items: center; 
       position: sticky; top: 0; z-index: 10; 
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     }
     header h2 { color: var(--text); font-size: 1.5rem; margin: 0; }
     
@@ -99,39 +116,45 @@
       font-size: 0.85rem;
       letter-spacing: 0.05em;
     }
-    button:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: var(--shadow); }
+    button:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(5, 150, 105, 0.3); }
     button:active { transform: translateY(0); }
     button.btn-danger { background: var(--danger); }
     button.btn-warning { background: var(--warning); color: #fff; }
     button.btn-success { background: var(--success); }
     button.btn-outline { background: transparent; border: 2px solid var(--border-focus); color: var(--text); }
-    button.btn-outline:hover { background: var(--border); border-color: var(--text); }
+    button.btn-outline:hover { background: rgba(0,0,0,0.05); border-color: var(--text); }
     button:disabled { opacity: 0.5; cursor: not-allowed; }
 
     /* Inputs */
     input, select, textarea { 
       font-family: 'Inter', sans-serif;
-      background: #fff; 
+      background: rgba(255, 255, 255, 0.8); 
       color: var(--text); 
-      border: 2px solid var(--border); 
+      border: 2px solid rgba(148, 163, 184, 0.5); 
       padding: 0.6rem; 
       border-radius: 6px; 
       outline: none; 
-      transition: border-color 0.2s;
+      transition: border-color 0.2s, background 0.2s;
     }
-    input:focus, select:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1); }
+    input:focus, select:focus, textarea:focus { 
+      background: #fff;
+      border-color: var(--primary); 
+      box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15); 
+    }
 
-    /* Layout & Cards */
+    /* Layout & Cards (Glassmorphism) */
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
     .card { 
       background: var(--surface); 
-      border: 1px solid var(--border); 
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.3); 
       border-radius: var(--radius); 
       padding: 1.5rem; 
       box-shadow: var(--shadow); 
-      transition: box-shadow 0.3s ease;
+      transition: box-shadow 0.3s ease, transform 0.3s ease;
     }
-    .card:hover { box-shadow: var(--shadow-hover); }
+    .card:hover { box-shadow: var(--shadow-hover); transform: translateY(-2px); }
     
     /* Match Cards */
     .match-card { text-align: center; position: relative; border-top: 5px solid var(--primary); }
@@ -140,7 +163,7 @@
     
     .match-status { position: absolute; top: 12px; right: 12px; font-size: 0.75rem; padding: 0.3rem 0.6rem; border-radius: 4px; font-weight: bold; }
     .status-live { background: rgba(5, 150, 105, 0.15); color: var(--primary); border: 2px solid var(--primary); animation: pulse 2s infinite; }
-    .status-completed { background: var(--bg-base); color: var(--text-muted); border: 1px solid var(--border); }
+    .status-completed { background: rgba(0,0,0,0.05); color: var(--text-muted); border: 1px solid rgba(0,0,0,0.1); }
     
     .stage-badge { position: absolute; top: 12px; left: 12px; font-size: 0.8rem; color: var(--text-muted); font-weight: bold; }
 
@@ -152,32 +175,33 @@
     .score-number { 
       font-size: 2.5rem; 
       font-weight: 700; 
-      background: var(--bg-base); 
+      background: #fff; 
       color: var(--text);
       padding: 0.2rem 1rem; 
       border-radius: 8px; 
-      border: 2px solid var(--border); 
+      border: 2px solid rgba(0,0,0,0.1); 
       width: 80px; 
       line-height: 1.2;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
     }
     .score-vs { font-size: 1rem; color: var(--text-muted); font-weight: bold; }
     
     /* Standings */
-    .standings-wrapper { margin-bottom: 2.5rem; background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); overflow: hidden; }
+    .standings-wrapper { margin-bottom: 2.5rem; background: var(--surface); backdrop-filter: blur(16px); border-radius: var(--radius); border: 1px solid rgba(255, 255, 255, 0.3); box-shadow: var(--shadow); overflow: hidden; }
     .group-header { font-size: 1.3rem; color: #fff; background: var(--text); margin: 0; padding: 0.8rem 1rem; }
     .table-responsive { overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; background: var(--surface); }
+    table { width: 100%; border-collapse: collapse; }
     th, td { padding: 1rem; text-align: center; border-bottom: 1px solid var(--border); }
-    th { background: var(--bg-base); font-size: 0.85rem; color: var(--text-muted); font-weight: 700; }
+    th { background: rgba(0,0,0,0.03); font-size: 0.85rem; color: var(--text-muted); font-weight: 700; }
     td:first-child, th:first-child { text-align: left; }
     tr:last-child td { border-bottom: none; }
-    tr:hover td { background: var(--surface-hover); }
+    tr:hover td { background: rgba(255,255,255,0.5); }
     .pts-col { font-weight: bold; color: var(--primary); font-size: 1.2rem; }
 
     /* Admin Section */
     .admin-controls { display: flex; gap: 0.5rem; }
     .admin-controls button { padding: 0.4rem 0.6rem; font-size: 0.75rem; }
-    .admin-section { background: var(--bg-base); padding: 1.5rem; border-radius: var(--radius); border: 1px solid var(--border); }
+    .admin-section { background: rgba(255,255,255,0.7); padding: 1.5rem; border-radius: var(--radius); border: 1px solid var(--border); }
     .admin-section h3 { color: var(--text); font-size: 1.2rem; margin-bottom: 0.5rem;}
     .form-group { display: flex; gap: 1rem; align-items: flex-start; flex-wrap: wrap; margin-top: 1rem; }
     
@@ -185,19 +209,22 @@
     .hidden { display: none !important; }
     .flex { display: flex; } .justify-between { justify-content: space-between; } .items-center { align-items: center; }
     .text-muted { color: var(--text-muted); }
+    
+    /* Section Titles - Adjusted for dark background */
     .section-title { 
       font-size: 1.75rem; 
       margin-top: 3rem; 
       margin-bottom: 1.5rem; 
       padding-bottom: 0.5rem; 
-      border-bottom: 3px solid var(--border); 
+      border-bottom: 2px solid rgba(255,255,255,0.2); 
       display: flex; justify-content: space-between; align-items: center;
-      color: var(--text);
+      color: #fff;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
     }
 
     /* Modals */
-    .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; z-index: 50; padding: 1rem; }
-    .modal { background: var(--surface); padding: 2rem; border-radius: var(--radius); width: 100%; max-width: 400px; border: none; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(11, 15, 25, 0.8); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 50; padding: 1rem; }
+    .modal { background: var(--surface); padding: 2rem; border-radius: var(--radius); width: 100%; max-width: 400px; border: 1px solid rgba(255,255,255,0.4); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
 
     /* Mobile Responsive Tweaks */
     @media (max-width: 600px) {
@@ -218,7 +245,7 @@
   </header>
 
   <div class="container">
-    <div id="adminPanel" class="hidden">
+    <div id="adminPanel" class="hidden card" style="margin-bottom: 2rem; border: 2px solid var(--primary);">
       <h2 style="color: var(--primary); font-family: 'Oswald', sans-serif; text-transform: uppercase;">Control Center</h2>
       <p class="text-muted" style="margin-bottom: 1.5rem;">Manage tournament logic, groups, scores, and players.</p>
       
@@ -294,22 +321,21 @@
           </div>
         </div>
       </div>
-      <hr style="border: 2px solid var(--border); margin: 2rem 0; border-radius:2px;"/>
     </div>
 
     <h2 class="section-title">Tournament Standings</h2>
     <div id="standingsContainer">
-      <div style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading standings...</div>
+      <div class="card" style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading standings...</div>
     </div>
 
     <h2 class="section-title">Match Board</h2>
     <div id="matchesGrid" class="grid" style="margin-bottom: 3rem;">
-      <div style="text-align: center; width: 100%; color: var(--text-muted); padding: 2rem;">Loading matches...</div>
+      <div class="card" style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading matches...</div>
     </div>
 
     <h2 class="section-title">Team Rosters</h2>
     <div id="teamsGrid" class="grid">
-      <div style="text-align: center; width: 100%; color: var(--text-muted); padding: 2rem;">Loading teams...</div>
+      <div class="card" style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading teams...</div>
     </div>
   </div>
 
@@ -589,7 +615,7 @@
               <tbody>
                 ${teams.map((s, index) => {
                   const advanceThreshold = groupNames.length > 1 ? 2 : 4;
-                  const isAdvancing = index < advanceThreshold ? 'border-left: 4px solid var(--primary); background: rgba(5, 150, 105, 0.03);' : 'border-left: 4px solid transparent;';
+                  const isAdvancing = index < advanceThreshold ? 'border-left: 4px solid var(--primary); background: rgba(5, 150, 105, 0.05);' : 'border-left: 4px solid transparent;';
                   return `
                     <tr>
                       <td style="font-weight:600; ${isAdvancing}">
@@ -678,7 +704,7 @@
       
       let html = `
         <div class="card" style="padding:1.5rem;">
-          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid var(--border); padding-bottom:0.8rem; margin-bottom:1rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:0.8rem; margin-bottom:1rem;">
             <div>
               <h3 style="font-size: 1.3rem; margin:0; display:inline-block; font-family:'Oswald', sans-serif;">${team.name}</h3>
               <span style="font-size:0.75rem; color:var(--warning); margin-left:8px; border:2px solid var(--warning); font-weight:bold; padding:2px 6px; border-radius:4px;">Grp ${team.group_name || 'A'}</span>
@@ -693,7 +719,7 @@
       } else {
         teamPlayers.forEach(p => {
           html += `
-            <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-base); border: 1px solid var(--border); padding:0.6rem 0.8rem; border-radius:8px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(255,255,255,0.6); border: 1px solid rgba(0,0,0,0.05); padding:0.6rem 0.8rem; border-radius:8px;">
               <div style="display:flex; align-items:center; gap:0.8rem;">
                 <div style="background:var(--primary); color:#fff; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-family:'Oswald', sans-serif; font-weight:bold; box-shadow:0 2px 4px rgba(5,150,105,0.3);">${p.jersey_number}</div>
                 <div>
@@ -706,9 +732,9 @@
               </div>
               <div style="display:flex; gap:4px; align-items:center;">
                 ${state.isAdmin ? `
-                  <button style="font-size:0.8rem; padding:2px 6px; background:#fff; border:1px solid var(--border); border-radius:4px; cursor:pointer;" onclick="updateStat(${p.id}, 'goal')">⚽</button>
-                  <button style="font-size:0.8rem; padding:2px 6px; background:#fff; border:1px solid var(--border); border-radius:4px; cursor:pointer;" onclick="updateStat(${p.id}, 'yellow')">🟨</button>
-                  <button style="font-size:0.8rem; padding:2px 6px; background:#fff; border:1px solid var(--border); border-radius:4px; cursor:pointer;" onclick="updateStat(${p.id}, 'red')">🟥</button>
+                  <button style="font-size:0.8rem; padding:2px 6px; background:#fff; border:1px solid var(--border); border-radius:4px; cursor:pointer; color:#000;" onclick="updateStat(${p.id}, 'goal')">⚽</button>
+                  <button style="font-size:0.8rem; padding:2px 6px; background:#fff; border:1px solid var(--border); border-radius:4px; cursor:pointer; color:#000;" onclick="updateStat(${p.id}, 'yellow')">🟨</button>
+                  <button style="font-size:0.8rem; padding:2px 6px; background:#fff; border:1px solid var(--border); border-radius:4px; cursor:pointer; color:#000;" onclick="updateStat(${p.id}, 'red')">🟥</button>
                 ` : ''}
                 <div style="display:flex; gap:6px; margin-left:8px;">
                   ${p.goals > 0 ? `<span style="background:var(--text); color:#fff; font-size:0.75rem; padding:2px 6px; border-radius:4px; font-weight:bold;">${p.goals} ⚽</span>` : ''}
