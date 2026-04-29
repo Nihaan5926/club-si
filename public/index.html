@@ -123,7 +123,7 @@
   <div class="container">
     <div id="adminPanel" class="hidden">
       <h2 style="color: var(--primary);">Admin Dashboard</h2>
-      <p class="text-muted" style="margin-bottom: 1.5rem;">Manage tournament logic, groups, scores, and bulk imports.</p>
+      <p class="text-muted" style="margin-bottom: 1.5rem;">Manage tournament logic, groups, scores, and players.</p>
       
       <div class="grid">
         <div class="admin-section">
@@ -176,11 +176,22 @@
         </div>
 
         <div class="admin-section">
-          <h3>Batch Register Players</h3>
-          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom:0.5rem;">Format per line: Name, Jersey (e.g. John Doe, 10)</p>
-          <div class="form-group" style="flex-direction: column; gap:0.5rem;">
+          <h3>Register Players</h3>
+          
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom:0.5rem;">Add a single player manually.</p>
+          <div class="form-group" style="align-items: center; margin-top:0; margin-bottom: 1rem;">
+            <select id="singlePlayerTeam" style="flex:1; width: 100%;"><option value="">Team...</option></select>
+            <input type="text" id="spName" placeholder="Player Name" style="flex:1; min-width:100px;" />
+            <input type="number" id="spJersey" placeholder="Jersey #" style="width:70px;" />
+            <button onclick="createSinglePlayer()">Add</button>
+          </div>
+
+          <hr style="border-color: var(--border); margin: 1rem 0;"/>
+
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom:0.5rem;">Batch Import (Format: Name, Jersey)</p>
+          <div class="form-group" style="flex-direction: column; gap:0.5rem; margin-top: 0;">
             <select id="playerTeamSelect" style="width:100%;"><option value="">Select Team...</option></select>
-            <textarea id="batchPlayersInput" rows="3" style="width:100%;" placeholder="John Doe, 10&#10;Jane Smith, 7"></textarea>
+            <textarea id="batchPlayersInput" rows="2" style="width:100%;" placeholder="John Doe, 10&#10;Jane Smith, 7"></textarea>
             <button onclick="batchCreatePlayers()" style="width:100%;">Import Players</button>
           </div>
         </div>
@@ -215,6 +226,39 @@
     </div>
   </div>
 
+  <div id="editPlayerModal" class="modal-overlay hidden">
+    <div class="modal">
+      <h3 style="margin-bottom: 1rem; color: var(--warning);">Edit Player Stats</h3>
+      <input type="hidden" id="editPlayerId" />
+      <div class="form-group" style="flex-direction:column; gap:0.5rem; margin-top:0;">
+        <div style="display:flex; justify-content:space-between; width:100%;">
+          <label style="width:40%;">Name</label> 
+          <input type="text" id="epName" style="width:60%">
+        </div>
+        <div style="display:flex; justify-content:space-between; width:100%;">
+          <label style="width:40%;">Jersey Number</label> 
+          <input type="number" id="epJersey" style="width:60%">
+        </div>
+        <div style="display:flex; justify-content:space-between; width:100%;">
+          <label style="width:40%;">Goals ⚽</label> 
+          <input type="number" id="epGoals" style="width:60%">
+        </div>
+        <div style="display:flex; justify-content:space-between; width:100%;">
+          <label style="width:40%;">Yellow Cards 🟨</label> 
+          <input type="number" id="epYellow" style="width:60%">
+        </div>
+        <div style="display:flex; justify-content:space-between; width:100%;">
+          <label style="width:40%;">Red Cards 🟥</label> 
+          <input type="number" id="epRed" style="width:60%">
+        </div>
+      </div>
+      <div class="flex justify-between" style="margin-top:1.5rem;">
+        <button class="btn-outline" onclick="toggleEditPlayerModal(false)">Cancel</button>
+        <button class="btn-success" onclick="savePlayerEdit()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
 <script>
   let state = { teams: [], players: [], matches: [], standings: {}, isAdmin: false, adminToken: '' };
 
@@ -226,7 +270,7 @@
         state.teams = data.teams;
         state.players = data.players;
         state.matches = data.matches;
-        state.standings = data.standings; // Note: standings is now an object grouped by Group Name
+        state.standings = data.standings;
         renderDashboard();
         if(state.isAdmin) updateAdminDropdowns();
       }
@@ -273,6 +317,7 @@
     return data;
   }
 
+  // --- MATCH FUNCTIONS ---
   async function createMatch() {
     const t1 = document.getElementById('matchTeam1Select').value;
     const t2 = document.getElementById('matchTeam2Select').value;
@@ -294,6 +339,7 @@
     catch(e) { alert(e.message); }
   }
 
+  // --- TEAM FUNCTIONS ---
   async function createTeam() {
     const input = document.getElementById('newTeamName');
     const group = document.getElementById('newTeamGroup').value;
@@ -321,6 +367,20 @@
     try { await apiCall(`/api/teams/${id}`, 'DELETE'); loadData(); } catch(e) { alert(e.message); }
   }
 
+  // --- PLAYER FUNCTIONS (CRUD) ---
+  async function createSinglePlayer() {
+    const team_id = document.getElementById('singlePlayerTeam').value;
+    const name = document.getElementById('spName').value;
+    const jersey_number = document.getElementById('spJersey').value;
+    if (!team_id || !name) return alert('Please select a team and enter a player name.');
+    try {
+      await apiCall('/api/players', 'POST', { team_id, name, jersey_number });
+      document.getElementById('spName').value = '';
+      document.getElementById('spJersey').value = '';
+      loadData();
+    } catch(e) { alert(e.message); }
+  }
+
   async function batchCreatePlayers() {
     const tId = document.getElementById('playerTeamSelect').value;
     const text = document.getElementById('batchPlayersInput').value;
@@ -333,7 +393,7 @@
   }
 
   async function deletePlayer(id) {
-    if (!confirm('Remove player?')) return;
+    if (!confirm('Remove player permanently?')) return;
     try { await apiCall(`/api/players/${id}`, 'DELETE'); loadData(); } catch(e) { alert(e.message); }
   }
 
@@ -342,9 +402,47 @@
     catch(e) { alert(e.message); }
   }
 
+  // Edit Player Modal UI Controls
+  function toggleEditPlayerModal(show) {
+    const m = document.getElementById('editPlayerModal');
+    if (show) m.classList.remove('hidden');
+    else m.classList.add('hidden');
+  }
+
+  function openEditPlayerModal(id) {
+    const p = state.players.find(x => x.id === id);
+    if (!p) return;
+    document.getElementById('editPlayerId').value = p.id;
+    document.getElementById('epName').value = p.name;
+    document.getElementById('epJersey').value = p.jersey_number;
+    document.getElementById('epGoals').value = p.goals;
+    document.getElementById('epYellow').value = p.yellow_cards;
+    document.getElementById('epRed').value = p.red_cards;
+    toggleEditPlayerModal(true);
+  }
+
+  async function savePlayerEdit() {
+    const id = document.getElementById('editPlayerId').value;
+    const body = {
+      name: document.getElementById('epName').value,
+      jersey_number: document.getElementById('epJersey').value,
+      goals: document.getElementById('epGoals').value,
+      yellow_cards: document.getElementById('epYellow').value,
+      red_cards: document.getElementById('epRed').value
+    };
+    try {
+      await apiCall(`/api/players/${id}`, 'PUT', body);
+      toggleEditPlayerModal(false);
+      loadData();
+    } catch (e) { alert(e.message); }
+  }
+
+
+  // --- UI RENDER HELPERS ---
   function updateAdminDropdowns() {
     const options = '<option value="">Select...</option>' + state.teams.map(t => `<option value="${t.id}">${t.name} (Grp ${t.group_name || 'A'})</option>`).join('');
     document.getElementById('playerTeamSelect').innerHTML = options;
+    document.getElementById('singlePlayerTeam').innerHTML = options;
     document.getElementById('matchTeam1Select').innerHTML = options;
     document.getElementById('matchTeam2Select').innerHTML = options;
     document.getElementById('moveTeamSelect').innerHTML = options;
@@ -370,7 +468,6 @@
     }
 
     let html = '';
-    // Generate a table for each Group
     groupNames.forEach(groupName => {
       const teams = state.standings[groupName];
       html += `
@@ -391,7 +488,6 @@
               </thead>
               <tbody>
                 ${teams.map((s, index) => {
-                  // If multi-group, top 2 advance. If single group, top 4 advance. (Visual indicator only)
                   const advanceThreshold = groupNames.length > 1 ? 2 : 4;
                   const isAdvancing = index < advanceThreshold ? 'border-left: 3px solid var(--primary);' : '';
                   return `
@@ -487,7 +583,7 @@
               <h3 style="font-size: 1.2rem; margin:0; display:inline-block;">${team.name}</h3>
               <span style="font-size:0.75rem; color:var(--warning); margin-left:8px; border:1px solid var(--warning); padding:1px 4px; border-radius:4px;">Grp ${team.group_name || 'A'}</span>
             </div>
-            ${state.isAdmin ? `<button class="btn-danger btn-outline" style="padding:0.2rem 0.5rem; font-size:0.7rem;" onclick="deleteTeam(${team.id})">Delete</button>` : ''}
+            ${state.isAdmin ? `<button class="btn-danger btn-outline" style="padding:0.2rem 0.5rem; font-size:0.7rem;" onclick="deleteTeam(${team.id})">Delete Team</button>` : ''}
           </div>
           <div style="display:flex; flex-direction:column; gap:0.5rem;">
       `;
@@ -502,7 +598,10 @@
                 <div style="background:var(--primary); color:#000; width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:bold;">${p.jersey_number}</div>
                 <div>
                   <span style="font-weight:600; font-size:0.9rem;">${p.name}</span>
-                  ${state.isAdmin ? `<a href="#" style="font-size:0.7rem; color:var(--danger); text-decoration:none; margin-left:8px;" onclick="deletePlayer(${p.id})">X</a>` : ''}
+                  ${state.isAdmin ? `
+                    <button class="btn-outline" style="font-size:0.6rem; padding:1px 4px; margin-left:6px;" onclick="openEditPlayerModal(${p.id})">✏️</button>
+                    <a href="#" style="font-size:0.7rem; color:var(--danger); text-decoration:none; margin-left:4px;" onclick="deletePlayer(${p.id})">❌</a>
+                  ` : ''}
                 </div>
               </div>
               <div style="display:flex; gap:4px; align-items:center;">
