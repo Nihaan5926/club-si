@@ -5,10 +5,9 @@ const { Pool } = pkg;
 const app = express();
 const PORT = process.env.PORT || 3019;
 const DATABASE_URL = process.env.DATABASE_URL || '';
-const ADMIN_PASS = '0000';
+const ADMIN_PASS = process.env.ADMIN_PASS || '0000';
 
 app.use(express.json());
-// This automatically serves index.html from the 'public' folder
 app.use(express.static('public'));
 
 // --- In-memory fallback ---
@@ -55,7 +54,6 @@ if (DATABASE_URL) {
           created_at TIMESTAMP DEFAULT NOW()
         );
         
-        -- Patch existing tables if upgrading from previous version
         ALTER TABLE matches ADD COLUMN IF NOT EXISTS stage VARCHAR(50) DEFAULT 'group';
         ALTER TABLE teams ADD COLUMN IF NOT EXISTS group_name VARCHAR(50) DEFAULT 'A';
       `);
@@ -79,7 +77,6 @@ function requireAdmin(req, res, next) {
   else res.status(401).json({ ok: false, error: 'Unauthorized. Invalid Admin PIN.' });
 }
 
-// Calculate Standings Helper (Groups by group_name)
 function calculateStandings(teams, matches) {
   let flatStandings = teams.map(t => ({ 
     id: t.id, 
@@ -110,14 +107,12 @@ function calculateStandings(teams, matches) {
 
   flatStandings.forEach(s => s.gd = s.gf - s.ga);
 
-  // Group teams by their group_name
   const groupedStandings = {};
   flatStandings.forEach(s => {
     if (!groupedStandings[s.group_name]) groupedStandings[s.group_name] = [];
     groupedStandings[s.group_name].push(s);
   });
 
-  // Sort each group by Points, then Goal Difference, then Goals For
   for (const group in groupedStandings) {
     groupedStandings[group].sort((a, b) => b.pts - a.pts || b.gd - a.gd || b.gf - a.gf);
   }
@@ -125,7 +120,6 @@ function calculateStandings(teams, matches) {
   return groupedStandings;
 }
 
-// GET: Dashboard Data
 app.get('/api/dashboard', async (_req, res) => {
   try {
     let teams, players, matches;
@@ -143,7 +137,6 @@ app.get('/api/dashboard', async (_req, res) => {
   }
 });
 
-// POST: Create Team (Accepts group_name)
 app.post('/api/teams', requireAdmin, async (req, res) => {
   const { name, group_name } = req.body;
   if (!name) return res.status(400).json({ ok: false, error: 'Team name required' });
@@ -161,7 +154,6 @@ app.post('/api/teams', requireAdmin, async (req, res) => {
   } catch (e) { res.status(500).json({ ok: false, error: e.message }); }
 });
 
-// PUT: Change Team Group
 app.put('/api/teams/:id/group', requireAdmin, async (req, res) => {
   const id = parseInt(req.params.id);
   const { group_name } = req.body;
@@ -178,7 +170,6 @@ app.put('/api/teams/:id/group', requireAdmin, async (req, res) => {
   } catch (e) { res.status(500).json({ ok: false, error: e.message }); }
 });
 
-// DELETE: Delete Team
 app.delete('/api/teams/:id', requireAdmin, async (req, res) => {
   const id = parseInt(req.params.id);
   try {
@@ -193,7 +184,6 @@ app.delete('/api/teams/:id', requireAdmin, async (req, res) => {
   } catch (e) { res.status(500).json({ ok: false, error: e.message }); }
 });
 
-// POST: Create Individual Player
 app.post('/api/players', requireAdmin, async (req, res) => {
   const { team_id, name, jersey_number } = req.body;
   if (!team_id || !name) return res.status(400).json({ ok: false, error: 'Missing fields' });
@@ -214,7 +204,6 @@ app.post('/api/players', requireAdmin, async (req, res) => {
   } catch (e) { res.status(500).json({ ok: false, error: e.message }); }
 });
 
-// PUT: Fully Update Individual Player (Edit details/stats)
 app.put('/api/players/:id', requireAdmin, async (req, res) => {
   const id = parseInt(req.params.id);
   const { name, jersey_number, goals, yellow_cards, red_cards } = req.body;
@@ -241,7 +230,6 @@ app.put('/api/players/:id', requireAdmin, async (req, res) => {
   } catch (e) { res.status(500).json({ ok: false, error: e.message }); }
 });
 
-// POST: Batch Create Players
 app.post('/api/players/batch', requireAdmin, async (req, res) => {
   const { team_id, playersText } = req.body;
   if (!team_id || !playersText) return res.status(400).json({ ok: false, error: 'Missing fields' });
@@ -302,7 +290,6 @@ app.post('/api/players/:id/stats', requireAdmin, async (req, res) => {
   } catch (e) { res.status(500).json({ ok: false, error: e.message }); }
 });
 
-// POST: Create Match
 app.post('/api/matches', requireAdmin, async (req, res) => {
   const { team1_id, team2_id, stage } = req.body;
   if (!team1_id || !team2_id || team1_id === team2_id) return res.status(400).json({ ok: false, error: 'Invalid teams' });
@@ -322,7 +309,6 @@ app.post('/api/matches', requireAdmin, async (req, res) => {
   } catch (e) { res.status(500).json({ ok: false, error: e.message }); }
 });
 
-// POST: Update Match State & Advanced Auto-Advance Logic
 app.post('/api/matches/:id/action', requireAdmin, async (req, res) => {
   const id = parseInt(req.params.id);
   const { action } = req.body; 
@@ -347,7 +333,6 @@ app.post('/api/matches/:id/action', requireAdmin, async (req, res) => {
       }
     }
 
-    // --- AUTO-ADVANCE LOGIC (Multi-Group Support) ---
     if (action === 'complete') {
       let allMatches, allTeams;
       if (pool) {
@@ -360,7 +345,6 @@ app.post('/api/matches/:id/action', requireAdmin, async (req, res) => {
       
       const liveGroupMatches = allMatches.filter(m => m.status === 'live');
       
-      // Trigger Semi-Finals if all group matches are done
       if (allMatches.length > 0 && liveGroupMatches.length === 0) {
         let existingSemis;
         if (pool) existingSemis = (await pool.query("SELECT * FROM matches WHERE stage='semi'")).rows;
@@ -373,7 +357,6 @@ app.post('/api/matches/:id/action', requireAdmin, async (req, res) => {
           let semi1_team1, semi1_team2, semi2_team1, semi2_team2;
 
           if (groupNames.length >= 2) {
-            // Multi-Group Logic: A1 vs B2, B1 vs A2
             const g1 = groupNames[0]; const g2 = groupNames[1];
             if (standingsByGroup[g1].length >= 2 && standingsByGroup[g2].length >= 2) {
               semi1_team1 = standingsByGroup[g1][0].id;
@@ -382,7 +365,6 @@ app.post('/api/matches/:id/action', requireAdmin, async (req, res) => {
               semi2_team2 = standingsByGroup[g1][1].id;
             }
           } else if (groupNames.length === 1) {
-            // Single-Group Logic: 1st vs 4th, 2nd vs 3rd
             const g = groupNames[0];
             if (standingsByGroup[g].length >= 4) {
               const top4 = standingsByGroup[g].slice(0, 4);
