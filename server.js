@@ -1,10 +1,6 @@
 import express from 'express';
 import pkg from 'pg';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
 const { Pool } = pkg;
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 const PORT = process.env.PORT || 3019;
@@ -13,11 +9,6 @@ const ADMIN_PASS = process.env.ADMIN_PASS || '0000';
 
 app.use(express.json());
 app.use(express.static('public'));
-
-// --- Serve the HTML file directly if not using 'public' folder ---
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
 
 // --- In-memory fallback ---
 let mem = { 
@@ -128,8 +119,6 @@ function calculateStandings(teams, matches) {
 
   return groupedStandings;
 }
-
-// --- API ROUTES ---
 
 app.get('/api/dashboard', async (_req, res) => {
   try {
@@ -251,7 +240,7 @@ app.post('/api/players/batch', requireAdmin, async (req, res) => {
     for (let line of lines) {
       const parts = line.split(',');
       const name = parts[0].trim();
-      const jersey_number = parts[1] ? parseInt(parts[1].trim()) || 0 : 0;
+      const jersey_number = parts[1] ? parseInt(parts[1].trim()) : 0;
       
       if (pool) {
         const r = await pool.query(
@@ -288,8 +277,6 @@ app.post('/api/players/:id/stats', requireAdmin, async (req, res) => {
     else if (action === 'undo_yellow') q = 'yellow_cards = GREATEST(yellow_cards - 1, 0)';
     else if (action === 'red') q = 'red_cards = red_cards + 1';
     else if (action === 'undo_red') q = 'red_cards = GREATEST(red_cards - 1, 0)';
-
-    if (!q) return res.status(400).json({ ok: false, error: 'Invalid action' });
 
     if (pool) await pool.query(`UPDATE players SET ${q} WHERE id = $1;`, [id]);
     else {
@@ -333,8 +320,6 @@ app.post('/api/matches/:id/action', requireAdmin, async (req, res) => {
     else if (action === 't2_add') q = 'team2_score = team2_score + 1';
     else if (action === 't2_sub') q = 'team2_score = GREATEST(team2_score - 1, 0)';
     else if (action === 'complete') q = "status = 'completed'";
-
-    if (!q) return res.status(400).json({ ok: false, error: 'Invalid action' });
 
     if (pool) await pool.query(`UPDATE matches SET ${q} WHERE id = $1;`, [id]);
     else {
