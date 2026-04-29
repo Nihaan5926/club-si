@@ -1,0 +1,25 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    ports:
+      - "3019:3019"
+    environment:
+      - DATABASE_URL=postgres://futsal_user:futsal_pass@db:5432/futsal_db
+      - PORT=3019
+    depends_on:
+      - db
+    restart: always
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=futsal_user
+      - POSTGRES_PASSWORD=futsal_pass
+      - POSTGRES_DB=futsal_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  postgres_data:
