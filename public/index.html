@@ -7,31 +7,35 @@
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Oswald:ital,wght@0,500;0,700;1,700&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      /* Glassmorphism Light Theme UI over Dark Background */
-      --surface: rgba(255, 255, 255, 0.92); 
-      --surface-hover: rgba(255, 255, 255, 0.98);
-      --text: #0f172a;
-      --text-muted: #475569;
-      --primary: #059669; /* Emerald */
-      --primary-hover: #047857;
-      --danger: #e11d48; /* Crimson */
-      --warning: #ea580c; /* Deep Orange */
-      --success: #2563eb; /* Royal Blue */
-      --border: rgba(148, 163, 184, 0.3);
-      --border-focus: #94a3b8;
-      --radius: 12px;
-      --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-      --shadow-hover: 0 12px 40px 0 rgba(0, 0, 0, 0.4);
+      /* True Dark Glassmorphism Theme */
+      --surface: rgba(15, 23, 42, 0.45); 
+      --surface-hover: rgba(30, 41, 59, 0.55);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --glass-highlight: rgba(255, 255, 255, 0.2);
+      
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      
+      /* Sporty Neon Accents */
+      --primary: #00ff88; /* Neon Futsal Green */
+      --primary-hover: #00cc6a;
+      --danger: #ff0055; /* Neon Pink/Red */
+      --warning: #ffaa00; /* Neon Orange */
+      --success: #00e5ff; /* Neon Cyan */
+      
+      --radius: 16px;
+      --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+      --shadow-hover: 0 12px 40px 0 rgba(0, 255, 136, 0.15);
     }
     
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
     /* ====================================
-      LIVE STARRY NIGHT BACKGROUND 
+      LIVE STADIUM ORB BACKGROUND 
       ====================================
     */
     body { 
@@ -41,43 +45,40 @@
       padding-bottom: 3rem;
       position: relative;
       overflow-x: hidden;
-      /* Deep space gradient */
-      background-color: #0b0f19;
-      background-image: radial-gradient(circle at top right, #1e293b 0%, #06080d 100%);
-      background-attachment: fixed;
+      background-color: #050b14;
+      min-height: 100vh;
     }
     
-    /* Parallax Star Layer 1 */
+    /* Animated Glowing Orbs Behind Glass */
+    body::before, body::after {
+      content: ""; 
+      position: fixed; 
+      border-radius: 50%;
+      filter: blur(100px);
+      z-index: -1;
+      opacity: 0.6;
+      animation: float 20s infinite ease-in-out alternate;
+    }
+
     body::before {
-      content: ""; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: -2;
-      background: transparent;
-      background-image: 
-        radial-gradient(1.5px 1.5px at 25px 5px, #fff, transparent),
-        radial-gradient(1.5px 1.5px at 50px 25px, rgba(255,255,255,0.8), transparent),
-        radial-gradient(1px 1px at 125px 20px, #fff, transparent),
-        radial-gradient(2px 2px at 50px 75px, rgba(255,255,255,0.9), transparent),
-        radial-gradient(2px 2px at 15px 125px, #fff, transparent),
-        radial-gradient(2.5px 2.5px at 110px 140px, rgba(255,255,255,0.7), transparent);
-      background-size: 200px 200px;
-      animation: stardrift 60s linear infinite;
+      top: -10%; left: -10%;
+      width: 50vw; height: 50vw;
+      background: radial-gradient(circle, rgba(0,255,136,0.15), transparent 70%);
+      animation-delay: 0s;
     }
 
-    /* Parallax Star Layer 2 */
     body::after {
-      content: ""; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: -1;
-      background: transparent;
-      background-image: 
-        radial-gradient(1.5px 1.5px at 75px 125px, #fff, transparent),
-        radial-gradient(2px 2px at 100px 75px, rgba(255,255,255,0.8), transparent),
-        radial-gradient(2.5px 2.5px at 199px 100px, rgba(255,255,255,0.9), transparent),
-        radial-gradient(1.5px 1.5px at 20px 50px, #fff, transparent),
-        radial-gradient(3px 3px at 160px 20px, rgba(255,255,255,0.6), transparent);
-      background-size: 300px 300px;
-      animation: stardrift2 90s linear infinite;
+      bottom: -10%; right: -10%;
+      width: 60vw; height: 60vw;
+      background: radial-gradient(circle, rgba(0,229,255,0.15), transparent 70%);
+      animation-delay: -5s;
     }
 
-    @keyframes stardrift { 0% { background-position: 0 0; } 100% { background-position: 200px 200px; } }
-    @keyframes stardrift2 { 0% { background-position: 0 0; } 100% { background-position: -300px 300px; } }
+    @keyframes float { 
+      0% { transform: translate(0, 0) scale(1); } 
+      50% { transform: translate(5%, 10%) scale(1.1); }
+      100% { transform: translate(-5%, -5%) scale(0.9); } 
+    }
 
     /* Sporty Headers */
     h1, h2, h3, .stage-badge, .match-status, th {
@@ -87,140 +88,208 @@
     }
 
     header { 
-      background: rgba(255, 255, 255, 0.85); 
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      background: rgba(10, 15, 25, 0.7); 
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       padding: 1rem 2rem; 
-      border-bottom: 3px solid var(--primary); 
+      border-bottom: 1px solid var(--glass-border);
+      box-shadow: 0 4px 30px rgba(0,0,0,0.5);
       display: flex; justify-content: space-between; align-items: center; 
       position: sticky; top: 0; z-index: 10; 
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     }
-    header h2 { color: var(--text); font-size: 1.5rem; margin: 0; }
+    
+    header h2 { 
+      color: var(--text); 
+      font-size: 1.75rem; 
+      margin: 0; 
+      font-style: italic;
+      text-shadow: 0 0 10px rgba(0,255,136,0.3);
+    }
+    header h2 span { color: var(--primary); }
     
     .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
     
-    /* Buttons */
+    /* Buttons - Cyber/Sport Style */
     button { 
-      font-family: 'Inter', sans-serif;
+      font-family: 'Oswald', sans-serif;
       background: var(--primary); 
-      color: white; 
+      color: #000; 
       border: none; 
       padding: 0.6rem 1.2rem; 
-      border-radius: 6px; 
+      border-radius: 8px; 
       cursor: pointer; 
-      font-weight: 600; 
-      transition: all 0.2s ease; 
+      font-weight: 700; 
+      transition: all 0.3s ease; 
       text-transform: uppercase;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       letter-spacing: 0.05em;
+      box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
     }
-    button:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(5, 150, 105, 0.3); }
+    button:hover { 
+      background: var(--primary-hover); 
+      transform: translateY(-2px) scale(1.02); 
+      box-shadow: 0 0 20px rgba(0, 255, 136, 0.5); 
+    }
     button:active { transform: translateY(0); }
-    button.btn-danger { background: var(--danger); }
-    button.btn-warning { background: var(--warning); color: #fff; }
-    button.btn-success { background: var(--success); }
-    button.btn-outline { background: transparent; border: 2px solid var(--border-focus); color: var(--text); }
-    button.btn-outline:hover { background: rgba(0,0,0,0.05); border-color: var(--text); }
-    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    button.btn-danger { background: var(--danger); color: #fff; box-shadow: 0 0 15px rgba(255, 0, 85, 0.2); }
+    button.btn-danger:hover { box-shadow: 0 0 20px rgba(255, 0, 85, 0.5); }
+    button.btn-warning { background: var(--warning); color: #000; box-shadow: 0 0 15px rgba(255, 170, 0, 0.2); }
+    button.btn-success { background: var(--success); color: #000; }
+    
+    button.btn-outline { 
+      background: rgba(255,255,255,0.05); 
+      border: 1px solid var(--glass-highlight); 
+      color: var(--text); 
+      box-shadow: none;
+    }
+    button.btn-outline:hover { 
+      background: rgba(255,255,255,0.1); 
+      border-color: var(--text); 
+    }
+    button:disabled { opacity: 0.5; cursor: not-allowed; box-shadow:none; }
 
-    /* Inputs */
+    /* Inputs - Dark Glass */
     input, select, textarea { 
       font-family: 'Inter', sans-serif;
-      background: rgba(255, 255, 255, 0.8); 
+      background: rgba(0, 0, 0, 0.3); 
       color: var(--text); 
-      border: 2px solid rgba(148, 163, 184, 0.5); 
-      padding: 0.6rem; 
-      border-radius: 6px; 
+      border: 1px solid var(--glass-border); 
+      padding: 0.7rem; 
+      border-radius: 8px; 
       outline: none; 
-      transition: border-color 0.2s, background 0.2s;
+      transition: all 0.3s ease;
       max-width: 100%;
     }
     input:focus, select:focus, textarea:focus { 
-      background: #fff;
+      background: rgba(0, 0, 0, 0.5);
       border-color: var(--primary); 
-      box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15); 
+      box-shadow: 0 0 10px rgba(0, 255, 136, 0.2); 
     }
+    select option { background: #0f172a; color: #fff; } /* Fix dropdown readability */
 
-    /* Layout & Cards (Glassmorphism) */
+    /* Layout & Cards (Deep Glassmorphism) */
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
     .card { 
       background: var(--surface); 
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.3); 
+      border: 1px solid var(--glass-border);
+      border-top: 1px solid var(--glass-highlight);
+      border-left: 1px solid var(--glass-highlight);
       border-radius: var(--radius); 
       padding: 1.5rem; 
       box-shadow: var(--shadow); 
-      transition: box-shadow 0.3s ease, transform 0.3s ease;
-      overflow: hidden; /* Added to prevent child elements from bleeding out */
+      transition: all 0.3s ease;
+      overflow: hidden;
     }
-    .card:hover { box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+    .card:hover { 
+      box-shadow: var(--shadow-hover); 
+      transform: translateY(-4px); 
+      border-color: rgba(0,255,136,0.3);
+    }
     
     /* Match Cards */
-    .match-card { text-align: center; position: relative; border-top: 5px solid var(--primary); }
+    .match-card { text-align: center; position: relative; border-top: 3px solid var(--primary); }
     .match-card[data-stage="semi"] { border-top-color: var(--warning); }
     .match-card[data-stage="final"] { border-top-color: var(--danger); }
     
-    .match-status { position: absolute; top: 12px; right: 12px; font-size: 0.75rem; padding: 0.3rem 0.6rem; border-radius: 4px; font-weight: bold; }
-    .status-live { background: rgba(5, 150, 105, 0.15); color: var(--primary); border: 2px solid var(--primary); animation: pulse 2s infinite; }
-    .status-completed { background: rgba(0,0,0,0.05); color: var(--text-muted); border: 1px solid rgba(0,0,0,0.1); }
+    .match-status { 
+      position: absolute; top: 12px; right: 12px; 
+      font-size: 0.75rem; padding: 0.3rem 0.6rem; 
+      border-radius: 4px; font-weight: bold; 
+    }
+    .status-live { 
+      background: rgba(0, 255, 136, 0.15); 
+      color: var(--primary); 
+      border: 1px solid var(--primary); 
+      animation: neon-pulse 2s infinite; 
+    }
+    .status-completed { 
+      background: rgba(255,255,255,0.05); 
+      color: var(--text-muted); 
+      border: 1px solid var(--glass-border); 
+    }
     
-    .stage-badge { position: absolute; top: 12px; left: 12px; font-size: 0.8rem; color: var(--text-muted); font-weight: bold; }
+    .stage-badge { position: absolute; top: 12px; left: 12px; font-size: 0.8rem; color: var(--text-muted); font-weight: bold; font-style: italic;}
 
-    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(5, 150, 105, 0.4); } 70% { box-shadow: 0 0 0 6px rgba(5, 150, 105, 0); } 100% { box-shadow: 0 0 0 0 rgba(5, 150, 105, 0); } }
+    @keyframes neon-pulse { 
+      0% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.4); } 
+      70% { box-shadow: 0 0 0 8px rgba(0, 255, 136, 0); } 
+      100% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0); } 
+    }
 
-    /* Scoreboard - FIXED OVERFLOW ISSUES */
+    /* Scoreboard - Digital Stadium Style */
     .scoreboard { 
       display: flex; 
       align-items: center; 
       justify-content: center; 
-      gap: 0.5rem; /* Reduced gap to save horizontal space */
+      gap: 0.5rem; 
       margin: 2.5rem 0 1rem 0; 
       width: 100%;
     }
     .score-team { 
       flex: 1; 
-      font-size: 1rem; 
+      font-size: 1.1rem; 
       font-weight: 600; 
       text-transform: uppercase;
-      word-wrap: break-word; /* Forces long unbroken words to drop to next line */
-      overflow-wrap: break-word; 
-      hyphens: auto;
+      word-wrap: break-word;
       padding: 0 4px;
       line-height: 1.2;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
     }
     .score-number { 
-      font-size: 2rem; /* Reduced from 2.5rem */
+      font-family: 'Oswald', sans-serif;
+      font-size: 2.2rem; 
       font-weight: 700; 
-      background: #fff; 
-      color: var(--text);
-      padding: 0.2rem 0.5rem; 
+      background: rgba(0,0,0,0.6); 
+      color: var(--primary);
+      padding: 0.2rem 0.6rem; 
       border-radius: 8px; 
-      border: 2px solid rgba(0,0,0,0.1); 
-      min-width: 50px; /* Allows it to shrink if needed, but maintains box shape */
+      border: 1px solid rgba(0,255,136,0.3); 
+      min-width: 55px; 
       line-height: 1.2;
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+      box-shadow: inset 0 2px 10px rgba(0,0,0,0.8), 0 0 10px rgba(0,255,136,0.1);
     }
-    .score-vs { font-size: 0.9rem; color: var(--text-muted); font-weight: bold; padding: 0 4px; }
+    .score-vs { font-family: 'Oswald', sans-serif; font-size: 1rem; color: var(--text-muted); font-weight: bold; padding: 0 4px; font-style: italic;}
     
     /* Standings */
-    .standings-wrapper { margin-bottom: 2.5rem; background: var(--surface); backdrop-filter: blur(16px); border-radius: var(--radius); border: 1px solid rgba(255, 255, 255, 0.3); box-shadow: var(--shadow); overflow: hidden; }
-    .group-header { font-size: 1.3rem; color: #fff; background: var(--text); margin: 0; padding: 0.8rem 1rem; }
+    .standings-wrapper { 
+      margin-bottom: 2.5rem; 
+      background: var(--surface); 
+      backdrop-filter: blur(16px); 
+      border-radius: var(--radius); 
+      border: 1px solid var(--glass-border); 
+      box-shadow: var(--shadow); 
+      overflow: hidden; 
+    }
+    .group-header { 
+      font-size: 1.4rem; 
+      color: var(--primary); 
+      background: rgba(0,0,0,0.4); 
+      margin: 0; 
+      padding: 1rem; 
+      border-bottom: 1px solid var(--glass-border);
+      font-style: italic;
+    }
     .table-responsive { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; }
-    th, td { padding: 1rem; text-align: center; border-bottom: 1px solid var(--border); }
-    th { background: rgba(0,0,0,0.03); font-size: 0.85rem; color: var(--text-muted); font-weight: 700; }
+    th, td { padding: 1rem; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    th { background: rgba(255,255,255,0.02); font-size: 0.85rem; color: var(--text-muted); font-weight: 700; }
     td:first-child, th:first-child { text-align: left; }
     tr:last-child td { border-bottom: none; }
-    tr:hover td { background: rgba(255,255,255,0.5); }
+    tr:hover td { background: rgba(255,255,255,0.05); }
     .pts-col { font-weight: bold; color: var(--primary); font-size: 1.2rem; }
 
     /* Admin Section */
-    .admin-controls { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; } /* added flex-wrap */
+    .admin-controls { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; }
     .admin-controls button { padding: 0.4rem 0.6rem; font-size: 0.75rem; }
-    .admin-section { background: rgba(255,255,255,0.7); padding: 1.5rem; border-radius: var(--radius); border: 1px solid var(--border); }
-    .admin-section h3 { color: var(--text); font-size: 1.2rem; margin-bottom: 0.5rem;}
+    .admin-section { 
+      background: rgba(0,0,0,0.2); 
+      padding: 1.5rem; 
+      border-radius: 12px; 
+      border: 1px solid var(--glass-border); 
+    }
+    .admin-section h3 { color: var(--primary); font-size: 1.2rem; margin-bottom: 0.5rem;}
     .form-group { display: flex; gap: 1rem; align-items: flex-start; flex-wrap: wrap; margin-top: 1rem; }
     
     /* Utility */
@@ -228,47 +297,58 @@
     .flex { display: flex; } .justify-between { justify-content: space-between; } .items-center { align-items: center; }
     .text-muted { color: var(--text-muted); }
     
-    /* Section Titles - Adjusted for dark background */
+    /* Section Titles */
     .section-title { 
-      font-size: 1.75rem; 
-      margin-top: 3rem; 
+      font-size: 2rem; 
+      margin-top: 3.5rem; 
       margin-bottom: 1.5rem; 
       padding-bottom: 0.5rem; 
-      border-bottom: 2px solid rgba(255,255,255,0.2); 
+      border-bottom: 1px solid var(--glass-border); 
       display: flex; justify-content: space-between; align-items: center;
       color: #fff;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+      text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+      font-style: italic;
     }
 
     /* Modals */
-    .modal-overlay { position: fixed; inset: 0; background: rgba(11, 15, 25, 0.8); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 50; padding: 1rem; }
-    .modal { background: var(--surface); padding: 2rem; border-radius: var(--radius); width: 100%; max-width: 400px; border: 1px solid rgba(255,255,255,0.4); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+    .modal-overlay { 
+      position: fixed; inset: 0; 
+      background: rgba(5, 11, 20, 0.85); 
+      backdrop-filter: blur(10px); 
+      display: flex; justify-content: center; align-items: center; 
+      z-index: 50; padding: 1rem; 
+    }
+    .modal { 
+      background: var(--surface); 
+      padding: 2rem; 
+      border-radius: var(--radius); 
+      width: 100%; max-width: 400px; 
+      border: 1px solid var(--glass-border); 
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8); 
+    }
 
     /* Mobile Responsive Tweaks */
     @media (max-width: 600px) {
       header { flex-direction: column; gap: 1rem; text-align: center; }
-      .scoreboard { 
-        flex-direction: row; /* Keep it as a row but scaled down */
-        flex-wrap: nowrap;
-        gap: 0.25rem;
-      }
+      .scoreboard { flex-direction: row; flex-wrap: nowrap; gap: 0.25rem; }
       .score-team { font-size: 0.85rem; }
       .score-number { font-size: 1.5rem; min-width: 40px; padding: 0.2rem 0.4rem; }
       .score-vs { font-size: 0.75rem; }
+      .section-title { font-size: 1.5rem; }
     }
   </style>
 </head>
 <body>
 
   <header>
-    <h2>CLUB SI 3V3 Futsal</h2>
+    <h2>CLUB SI <span>3V3</span> FUTSAL</h2>
     <div>
       <button id="authBtn" class="btn-outline">Admin Access</button>
     </div>
   </header>
 
   <div class="container">
-    <div id="adminPanel" class="hidden card" style="margin-bottom: 2rem; border: 2px solid var(--primary);">
+    <div id="adminPanel" class="hidden card" style="margin-bottom: 2rem; border-color: var(--primary);">
       <h2 style="color: var(--primary); font-family: 'Oswald', sans-serif; text-transform: uppercase;">Control Center</h2>
       <p class="text-muted" style="margin-bottom: 1.5rem;">Manage tournament logic, groups, scores, and players.</p>
       
@@ -284,7 +364,7 @@
               </select>
               <select id="matchTeam1Select" style="width:100%; margin-bottom:0.5rem;"><option value="">Team 1...</option></select>
             </div>
-            <div style="font-weight: 800; color: var(--text-muted); align-self: center; font-size: 1.2rem;">VS</div>
+            <div style="font-weight: 800; color: var(--text-muted); align-self: center; font-size: 1.2rem; font-style:italic;">VS</div>
             <div style="width:100%;">
               <select id="matchTeam2Select" style="width:100%;"><option value="">Team 2...</option></select>
             </div>
@@ -306,7 +386,7 @@
             <button onclick="createTeam()">Add</button>
           </div>
           
-          <hr style="border-color: var(--border); margin: 1.5rem 0;"/>
+          <hr style="border-color: var(--glass-border); margin: 1.5rem 0;"/>
           
           <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom:0.5rem;">Transfer team to a different group.</p>
           <div class="form-group" style="align-items: center; margin-top:0;">
@@ -334,7 +414,7 @@
             </div>
           </div>
 
-          <hr style="border-color: var(--border); margin: 1rem 0;"/>
+          <hr style="border-color: var(--glass-border); margin: 1rem 0;"/>
 
           <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom:0.5rem;">Batch Import (Format: Name, Jersey)</p>
           <div class="form-group" style="flex-direction: column; gap:0.5rem; margin-top: 0;">
@@ -375,7 +455,7 @@
 
   <div id="editPlayerModal" class="modal-overlay hidden">
     <div class="modal">
-      <h3 style="margin-bottom: 1.5rem; color: var(--text);">Edit Player Stats</h3>
+      <h3 style="margin-bottom: 1.5rem; color: var(--primary);">Edit Player Stats</h3>
       <input type="hidden" id="editPlayerId" />
       <div class="form-group" style="flex-direction:column; gap:0.8rem; margin-top:0;">
         <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
@@ -638,7 +718,7 @@
               <tbody>
                 ${teams.map((s, index) => {
                   const advanceThreshold = groupNames.length > 1 ? 2 : 4;
-                  const isAdvancing = index < advanceThreshold ? 'border-left: 4px solid var(--primary); background: rgba(5, 150, 105, 0.05);' : 'border-left: 4px solid transparent;';
+                  const isAdvancing = index < advanceThreshold ? 'border-left: 4px solid var(--primary); background: rgba(0, 255, 136, 0.05);' : 'border-left: 4px solid transparent;';
                   return `
                     <tr>
                       <td style="font-weight:600; ${isAdvancing}">
@@ -679,7 +759,7 @@
       let adminHTML = '';
       if (state.isAdmin) {
         adminHTML = `
-          <div style="margin-top: 1.5rem; border-top: 1px solid var(--border); padding-top: 1rem;">
+          <div style="margin-top: 1.5rem; border-top: 1px solid var(--glass-border); padding-top: 1rem;">
             <div style="display:flex; flex-wrap:wrap; justify-content:space-between; gap: 1rem; margin-bottom: 1rem;">
               <div class="admin-controls">
                 <button class="btn-outline" onclick="matchAction(${match.id}, 't1_sub')">-</button>
@@ -727,10 +807,10 @@
       
       let html = `
         <div class="card" style="padding:1.5rem;">
-          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:0.8rem; margin-bottom:1rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--glass-border); padding-bottom:0.8rem; margin-bottom:1rem;">
             <div>
               <h3 style="font-size: 1.3rem; margin:0; display:inline-block; font-family:'Oswald', sans-serif;">${team.name}</h3>
-              <span style="font-size:0.75rem; color:var(--warning); margin-left:8px; border:2px solid var(--warning); font-weight:bold; padding:2px 6px; border-radius:4px;">Grp ${team.group_name || 'A'}</span>
+              <span style="font-size:0.75rem; color:var(--warning); margin-left:8px; border:1px solid var(--warning); font-weight:bold; padding:2px 6px; border-radius:4px;">Grp ${team.group_name || 'A'}</span>
             </div>
             ${state.isAdmin ? `<button class="btn-danger btn-outline" style="padding:0.3rem 0.6rem; font-size:0.7rem;" onclick="deleteTeam(${team.id})">Delete</button>` : ''}
           </div>
@@ -742,9 +822,9 @@
       } else {
         teamPlayers.forEach(p => {
           html += `
-            <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(255,255,255,0.6); border: 1px solid rgba(0,0,0,0.05); padding:0.6rem 0.8rem; border-radius:8px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding:0.6rem 0.8rem; border-radius:8px;">
               <div style="display:flex; align-items:center; gap:0.8rem;">
-                <div style="background:var(--primary); color:#fff; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-family:'Oswald', sans-serif; font-weight:bold; box-shadow:0 2px 4px rgba(5,150,105,0.3);">${p.jersey_number}</div>
+                <div style="background:var(--primary); color:#000; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-family:'Oswald', sans-serif; font-weight:bold; box-shadow:0 0 10px rgba(0,255,136,0.3);">${p.jersey_number}</div>
                 <div>
                   <span style="font-weight:600; font-size:0.95rem;">${p.name}</span>
                   ${state.isAdmin ? `
@@ -755,13 +835,13 @@
               </div>
               <div style="display:flex; gap:4px; align-items:center;">
                 ${state.isAdmin ? `
-                  <button style="font-size:0.8rem; padding:2px 6px; background:#fff; border:1px solid var(--border); border-radius:4px; cursor:pointer; color:#000;" onclick="updateStat(${p.id}, 'goal')">⚽</button>
-                  <button style="font-size:0.8rem; padding:2px 6px; background:#fff; border:1px solid var(--border); border-radius:4px; cursor:pointer; color:#000;" onclick="updateStat(${p.id}, 'yellow')">🟨</button>
-                  <button style="font-size:0.8rem; padding:2px 6px; background:#fff; border:1px solid var(--border); border-radius:4px; cursor:pointer; color:#000;" onclick="updateStat(${p.id}, 'red')">🟥</button>
+                  <button style="font-size:0.8rem; padding:2px 6px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:4px; cursor:pointer; color:#fff;" onclick="updateStat(${p.id}, 'goal')">⚽</button>
+                  <button style="font-size:0.8rem; padding:2px 6px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:4px; cursor:pointer; color:#fff;" onclick="updateStat(${p.id}, 'yellow')">🟨</button>
+                  <button style="font-size:0.8rem; padding:2px 6px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:4px; cursor:pointer; color:#fff;" onclick="updateStat(${p.id}, 'red')">🟥</button>
                 ` : ''}
                 <div style="display:flex; gap:6px; margin-left:8px;">
-                  ${p.goals > 0 ? `<span style="background:var(--text); color:#fff; font-size:0.75rem; padding:2px 6px; border-radius:4px; font-weight:bold;">${p.goals} ⚽</span>` : ''}
-                  ${p.yellow_cards > 0 ? `<span style="background:var(--warning); color:#fff; font-size:0.75rem; padding:2px 6px; border-radius:4px; font-weight:bold;">${p.yellow_cards} 🟨</span>` : ''}
+                  ${p.goals > 0 ? `<span style="background:rgba(255,255,255,0.2); color:#fff; font-size:0.75rem; padding:2px 6px; border-radius:4px; font-weight:bold;">${p.goals} ⚽</span>` : ''}
+                  ${p.yellow_cards > 0 ? `<span style="background:var(--warning); color:#000; font-size:0.75rem; padding:2px 6px; border-radius:4px; font-weight:bold;">${p.yellow_cards} 🟨</span>` : ''}
                   ${p.red_cards > 0 ? `<span style="background:var(--danger); color:#fff; font-size:0.75rem; padding:2px 6px; border-radius:4px; font-weight:bold;">${p.red_cards} 🟥</span>` : ''}
                 </div>
               </div>
@@ -774,6 +854,7 @@
     }).join('');
   }
 
+  // Load mock data initialization (assuming standard fetch usage)
   loadData();
 </script>
 </body>
