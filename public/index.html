@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>3v3 Futsal Tournament</title>
+  <title>3v3 Futsal Tournament Dashboard</title>
   <style>
     :root {
       --bg: #0f172a;
@@ -28,18 +28,30 @@
     button:hover { background: var(--primary-hover); }
     button.btn-danger { background: var(--danger); }
     button.btn-warning { background: var(--warning); color: #000; }
+    button.btn-success { background: var(--success); }
     button.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
     button.btn-outline:hover { background: var(--surface-hover); }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
 
     input, select { background: var(--bg); color: var(--text); border: 1px solid var(--border); padding: 0.5rem; border-radius: 6px; outline: none; }
     input:focus, select:focus { border-color: var(--primary); }
 
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.5rem; }
     .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
     
-    .team-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
-    .team-score { font-size: 2rem; font-weight: bold; color: var(--success); }
+    /* Matches Styling */
+    .match-card { text-align: center; position: relative; }
+    .match-status { position: absolute; top: 10px; right: 10px; font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: bold; text-transform: uppercase; }
+    .status-live { background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger); }
+    .status-completed { background: var(--border); color: var(--text-muted); }
+    .scoreboard { display: flex; align-items: center; justify-content: center; gap: 1rem; margin: 1.5rem 0; }
+    .score-team { flex: 1; font-size: 1.2rem; font-weight: bold; }
+    .score-number { font-size: 3rem; font-weight: 900; background: var(--bg); padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid var(--border); width: 80px; }
+    .score-vs { font-size: 1rem; color: var(--text-muted); font-weight: bold; }
+    .match-controls { display: flex; justify-content: space-between; margin-top: 1rem; gap: 1rem; }
     
+    /* Teams Styling */
+    .team-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
     .player-list { list-style: none; }
     .player-item { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid var(--border); }
     .player-item:last-child { border-bottom: none; }
@@ -54,12 +66,13 @@
 
     .admin-controls { display: flex; gap: 0.25rem; }
     .admin-controls button { padding: 0.25rem 0.5rem; font-size: 0.8rem; }
-
     .admin-section { background: var(--surface); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 2rem; border: 1px solid var(--border); }
     .form-group { display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap; margin-top: 1rem; }
     
     .hidden { display: none !important; }
     .flex { display: flex; } .justify-between { justify-content: space-between; } .items-center { align-items: center; }
+
+    .section-title { font-size: 1.5rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--border); }
 
     /* Modal */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 50; }
@@ -69,7 +82,7 @@
 <body>
 
   <header>
-    <h2>⚽ Futsal 3v3 Dashboard</h2>
+    <h2>⚽ Futsal 3v3 Manager</h2>
     <div>
       <button id="authBtn" class="btn-outline">Admin Login</button>
     </div>
@@ -78,9 +91,25 @@
   <div class="container">
     <div id="adminPanel" class="hidden">
       <h2>Admin Control Panel</h2>
-      <p class="text-muted" style="margin-bottom: 1.5rem;">Manage teams and players.</p>
+      <p class="text-muted" style="margin-bottom: 1.5rem;">Manage matches, teams, and players.</p>
       
       <div class="grid">
+        <div class="admin-section">
+          <h3>Create Match</h3>
+          <div class="form-group">
+            <div>
+              <label style="display:block; font-size:0.85rem; margin-bottom:0.25rem;">Team 1</label>
+              <select id="matchTeam1Select"><option value="">Select...</option></select>
+            </div>
+            <div style="padding-bottom: 0.5rem; font-weight: bold;">VS</div>
+            <div>
+              <label style="display:block; font-size:0.85rem; margin-bottom:0.25rem;">Team 2</label>
+              <select id="matchTeam2Select"><option value="">Select...</option></select>
+            </div>
+            <button onclick="createMatch()">Start Match</button>
+          </div>
+        </div>
+
         <div class="admin-section">
           <h3>Create New Team</h3>
           <div class="form-group">
@@ -97,14 +126,14 @@
           <div class="form-group">
             <div>
               <label style="display:block; font-size:0.85rem; margin-bottom:0.25rem;">Team</label>
-              <select id="playerTeamSelect"><option value="">Select Team...</option></select>
+              <select id="playerTeamSelect"><option value="">Select...</option></select>
             </div>
             <div>
-              <label style="display:block; font-size:0.85rem; margin-bottom:0.25rem;">Player Name</label>
-              <input type="text" id="newPlayerName" placeholder="Player Name" style="width: 140px;" />
+              <label style="display:block; font-size:0.85rem; margin-bottom:0.25rem;">Name</label>
+              <input type="text" id="newPlayerName" placeholder="Name" style="width: 120px;" />
             </div>
             <div>
-              <label style="display:block; font-size:0.85rem; margin-bottom:0.25rem;">Jersey #</label>
+              <label style="display:block; font-size:0.85rem; margin-bottom:0.25rem;">Jersey</label>
               <input type="number" id="newPlayerNumber" placeholder="10" style="width: 60px;" />
             </div>
             <button onclick="createPlayer()">Add</button>
@@ -114,8 +143,14 @@
       <hr style="border-color: var(--border); margin: 2rem 0;"/>
     </div>
 
+    <h2 class="section-title">Live & Completed Matches</h2>
+    <div id="matchesGrid" class="grid" style="margin-bottom: 3rem;">
+      <div style="text-align: center; width: 100%; color: var(--text-muted);">Loading matches...</div>
+    </div>
+
+    <h2 class="section-title">Tournament Teams</h2>
     <div id="teamsGrid" class="grid">
-      <div style="text-align: center; width: 100%; color: var(--text-muted);">Loading tournament data...</div>
+      <div style="text-align: center; width: 100%; color: var(--text-muted);">Loading teams...</div>
     </div>
   </div>
 
@@ -131,7 +166,7 @@
   </div>
 
 <script>
-  let state = { teams: [], players: [], isAdmin: false, adminToken: '' };
+  let state = { teams: [], players: [], matches: [], isAdmin: false, adminToken: '' };
 
   // --- Initialization ---
   async function loadData() {
@@ -141,6 +176,7 @@
       if (data.ok) {
         state.teams = data.teams;
         state.players = data.players;
+        state.matches = data.matches;
         renderDashboard();
         if(state.isAdmin) updateAdminDropdowns();
       }
@@ -178,7 +214,7 @@
       document.getElementById('adminPassInput').value = '';
       toggleModal(false);
       updateAdminDropdowns();
-      renderDashboard(); // Re-render to show admin buttons
+      renderDashboard();
     } else {
       alert('Invalid Password');
     }
@@ -197,7 +233,30 @@
     return data;
   }
 
-  // --- Actions ---
+  // --- Actions: Matches ---
+  async function createMatch() {
+    const t1 = document.getElementById('matchTeam1Select').value;
+    const t2 = document.getElementById('matchTeam2Select').value;
+    if (!t1 || !t2) return alert('Select both teams.');
+    if (t1 === t2) return alert('Cannot match a team against itself.');
+    try {
+      await apiCall('/api/matches', 'POST', { team1_id: t1, team2_id: t2 });
+      loadData();
+    } catch(e) { alert(e.message); }
+  }
+
+  async function matchAction(id, action) {
+    try { await apiCall(`/api/matches/${id}/action`, 'POST', { action }); loadData(); } 
+    catch(e) { alert(e.message); }
+  }
+
+  async function deleteMatch(id) {
+    if (!confirm('Delete this match completely?')) return;
+    try { await apiCall(`/api/matches/${id}`, 'DELETE'); loadData(); } 
+    catch(e) { alert(e.message); }
+  }
+
+  // --- Actions: Teams & Players ---
   async function createTeam() {
     const input = document.getElementById('newTeamName');
     if (!input.value) return;
@@ -209,7 +268,7 @@
   }
 
   async function deleteTeam(id) {
-    if (!confirm('Delete team and all its players?')) return;
+    if (!confirm('Delete team, its players, AND related matches?')) return;
     try { await apiCall(`/api/teams/${id}`, 'DELETE'); loadData(); } catch(e) { alert(e.message); }
   }
 
@@ -238,43 +297,90 @@
 
   // --- Renderers ---
   function updateAdminDropdowns() {
-    const sel = document.getElementById('playerTeamSelect');
-    sel.innerHTML = '<option value="">Select Team...</option>';
-    state.teams.forEach(t => {
-      sel.innerHTML += `<option value="${t.id}">${t.name}</option>`;
-    });
+    const teamOptions = '<option value="">Select...</option>' + state.teams.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+    document.getElementById('playerTeamSelect').innerHTML = teamOptions;
+    document.getElementById('matchTeam1Select').innerHTML = teamOptions;
+    document.getElementById('matchTeam2Select').innerHTML = teamOptions;
+  }
+
+  function getTeamName(id) {
+    const t = state.teams.find(t => t.id === id);
+    return t ? t.name : 'Unknown Team';
   }
 
   function renderDashboard() {
-    const grid = document.getElementById('teamsGrid');
-    grid.innerHTML = '';
+    renderMatches();
+    renderTeams();
+  }
 
+  function renderMatches() {
+    const grid = document.getElementById('matchesGrid');
+    if (state.matches.length === 0) {
+      grid.innerHTML = `<div style="text-align: center; width: 100%; color: var(--text-muted);">No matches created yet.</div>`;
+      return;
+    }
+
+    grid.innerHTML = state.matches.map(match => {
+      const isLive = match.status === 'live';
+      const badgeClass = isLive ? 'status-live' : 'status-completed';
+      const badgeText = isLive ? 'LIVE' : 'FINAL';
+
+      let adminHTML = '';
+      if (state.isAdmin) {
+        adminHTML = `
+          <div style="margin-top: 1.5rem; border-top: 1px solid var(--border); padding-top: 1rem;">
+            <div style="display:flex; justify-content:space-between; margin-bottom: 1rem;">
+              <div class="admin-controls">
+                <button class="btn-outline" onclick="matchAction(${match.id}, 't1_sub')">-</button>
+                <button onclick="matchAction(${match.id}, 't1_add')">+ Goal</button>
+              </div>
+              <div class="admin-controls">
+                <button onclick="matchAction(${match.id}, 't2_add')">+ Goal</button>
+                <button class="btn-outline" onclick="matchAction(${match.id}, 't2_sub')">-</button>
+              </div>
+            </div>
+            <div style="display:flex; justify-content:space-between;">
+              <button class="btn-danger btn-outline" style="font-size:0.8rem; padding:0.2rem 0.5rem;" onclick="deleteMatch(${match.id})">Delete Match</button>
+              ${isLive ? `<button class="btn-success" style="font-size:0.8rem; padding:0.2rem 0.5rem;" onclick="matchAction(${match.id}, 'complete')">Mark Complete</button>` : `<span style="font-size: 0.8rem; color: var(--text-muted);">Match Ended</span>`}
+            </div>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="card match-card">
+          <div class="match-status ${badgeClass}">${badgeText}</div>
+          <div class="scoreboard">
+            <div class="score-team">${getTeamName(match.team1_id)}</div>
+            <div class="score-number">${match.team1_score}</div>
+            <div class="score-vs">VS</div>
+            <div class="score-number">${match.team2_score}</div>
+            <div class="score-team">${getTeamName(match.team2_id)}</div>
+          </div>
+          ${adminHTML}
+        </div>
+      `;
+    }).join('');
+  }
+
+  function renderTeams() {
+    const grid = document.getElementById('teamsGrid');
     if (state.teams.length === 0) {
       grid.innerHTML = `<div style="text-align: center; width: 100%; color: var(--text-muted);">No teams registered yet.</div>`;
       return;
     }
 
-    state.teams.forEach(team => {
-      // Calculate Team Score (Sum of player goals)
+    grid.innerHTML = state.teams.map(team => {
       const teamPlayers = state.players.filter(p => p.team_id === team.id);
-      const teamScore = teamPlayers.reduce((acc, p) => acc + (p.goals || 0), 0);
-
-      const card = document.createElement('div');
-      card.className = 'card';
       
-      // Team Header
       let headerHTML = `
         <div class="team-header">
-          <div>
-            <h3 style="font-size: 1.4rem;">${team.name}</h3>
-            ${state.isAdmin ? `<button class="btn-danger" style="padding:0.2rem 0.5rem; font-size:0.7rem; margin-top:0.3rem;" onclick="deleteTeam(${team.id})">Delete Team</button>` : ''}
-          </div>
-          <div class="team-score">${teamScore}</div>
+          <h3 style="font-size: 1.2rem;">${team.name}</h3>
+          ${state.isAdmin ? `<button class="btn-danger" style="padding:0.2rem 0.5rem; font-size:0.7rem;" onclick="deleteTeam(${team.id})">Delete Team</button>` : ''}
         </div>
         <ul class="player-list">
       `;
 
-      // Players List
       if (teamPlayers.length === 0) {
         headerHTML += `<li class="text-muted" style="font-size:0.9rem;">No players assigned</li>`;
       } else {
@@ -297,7 +403,7 @@
                     <button class="btn-danger" onclick="updateStat(${p.id}, 'red')">+ 🟥</button>
                   </div>
                 ` : ''}
-                ${p.goals > 0 ? `<div class="stat-badge bg-goal" title="Goals">${p.goals}</div>` : ''}
+                ${p.goals > 0 ? `<div class="stat-badge bg-goal" title="Total Goals">${p.goals}</div>` : ''}
                 ${p.yellow_cards > 0 ? `<div class="stat-badge bg-yellow" title="Yellow Cards">${p.yellow_cards}</div>` : ''}
                 ${p.red_cards > 0 ? `<div class="stat-badge bg-red" title="Red Cards">${p.red_cards}</div>` : ''}
               </div>
@@ -307,9 +413,8 @@
       }
 
       headerHTML += `</ul>`;
-      card.innerHTML = headerHTML;
-      grid.appendChild(card);
-    });
+      return `<div class="card">${headerHTML}</div>`;
+    }).join('');
   }
 
   // Initial load
