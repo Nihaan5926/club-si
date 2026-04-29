@@ -193,6 +193,54 @@ app.delete('/api/teams/:id', requireAdmin, async (req, res) => {
   } catch (e) { res.status(500).json({ ok: false, error: e.message }); }
 });
 
+// POST: Create Individual Player
+app.post('/api/players', requireAdmin, async (req, res) => {
+  const { team_id, name, jersey_number } = req.body;
+  if (!team_id || !name) return res.status(400).json({ ok: false, error: 'Missing fields' });
+  const jNum = parseInt(jersey_number) || 0;
+  
+  try {
+    if (pool) {
+      const r = await pool.query(
+        'INSERT INTO players (team_id, name, jersey_number) VALUES ($1, $2, $3) RETURNING *;',
+        [team_id, name, jNum]
+      );
+      res.json({ ok: true, player: r.rows[0] });
+    } else {
+      const player = { id: mem.playerIdSeq++, team_id: parseInt(team_id), name, jersey_number: jNum, goals: 0, yellow_cards: 0, red_cards: 0 };
+      mem.players.push(player);
+      res.json({ ok: true, player });
+    }
+  } catch (e) { res.status(500).json({ ok: false, error: e.message }); }
+});
+
+// PUT: Fully Update Individual Player (Edit details/stats)
+app.put('/api/players/:id', requireAdmin, async (req, res) => {
+  const id = parseInt(req.params.id);
+  const { name, jersey_number, goals, yellow_cards, red_cards } = req.body;
+  
+  const jNum = parseInt(jersey_number) || 0;
+  const g = parseInt(goals) || 0;
+  const y = parseInt(yellow_cards) || 0;
+  const r = parseInt(red_cards) || 0;
+
+  try {
+    if (pool) {
+      await pool.query(
+        'UPDATE players SET name=$1, jersey_number=$2, goals=$3, yellow_cards=$4, red_cards=$5 WHERE id=$6;',
+        [name, jNum, g, y, r, id]
+      );
+    } else {
+      const p = mem.players.find(p => p.id === id);
+      if (p) {
+        p.name = name; p.jersey_number = jNum;
+        p.goals = g; p.yellow_cards = y; p.red_cards = r;
+      }
+    }
+    res.json({ ok: true });
+  } catch (e) { res.status(500).json({ ok: false, error: e.message }); }
+});
+
 // POST: Batch Create Players
 app.post('/api/players/batch', requireAdmin, async (req, res) => {
   const { team_id, playersText } = req.body;
