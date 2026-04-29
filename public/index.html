@@ -7,21 +7,20 @@
   <style>
     :root {
       --bg: #0f172a;
-      --surface: rgba(30, 41, 59, 0.85); /* Transparent for background bleed */
+      --surface: rgba(30, 41, 59, 0.85);
       --surface-hover: rgba(51, 65, 85, 0.9);
       --text: #f8fafc;
       --text-muted: #94a3b8;
-      --primary: #10b981; /* Futsal Green */
+      --primary: #10b981;
       --primary-hover: #059669;
       --danger: #ef4444;
       --warning: #f59e0b;
-      --success: #3b82f6; /* Blue for Complete */
+      --success: #3b82f6;
       --border: rgba(255, 255, 255, 0.1);
       --radius: 12px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
-    /* Sporty Live Background */
     body { 
       font-family: system-ui, -apple-system, sans-serif; 
       color: var(--text); 
@@ -33,7 +32,6 @@
       position: relative;
     }
     
-    /* Turf Lines Effect */
     body::before {
       content: "";
       position: fixed;
@@ -89,7 +87,9 @@
     .score-vs { font-size: 1rem; color: var(--text-muted); font-weight: bold; }
     
     /* Standings Table */
-    table { width: 100%; border-collapse: collapse; margin-top: 1rem; background: var(--surface); border-radius: var(--radius); overflow: hidden; }
+    .standings-wrapper { margin-bottom: 2rem; }
+    .group-header { font-size: 1.2rem; color: var(--warning); margin-bottom: 0.5rem; border-bottom: 1px dashed var(--border); padding-bottom: 0.3rem;}
+    table { width: 100%; border-collapse: collapse; background: var(--surface); border-radius: var(--radius); overflow: hidden; }
     th, td { padding: 0.75rem 1rem; text-align: center; border-bottom: 1px solid var(--border); }
     th { background: rgba(0,0,0,0.3); font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; }
     td:first-child, th:first-child { text-align: left; }
@@ -123,34 +123,55 @@
   <div class="container">
     <div id="adminPanel" class="hidden">
       <h2 style="color: var(--primary);">Admin Dashboard</h2>
-      <p class="text-muted" style="margin-bottom: 1.5rem;">Manage tournament logic, scores, and bulk imports.</p>
+      <p class="text-muted" style="margin-bottom: 1.5rem;">Manage tournament logic, groups, scores, and bulk imports.</p>
       
       <div class="grid">
         <div class="admin-section">
           <h3>Create Match</h3>
           <div class="form-group">
-            <div>
+            <div style="flex:1;">
               <select id="matchStageSelect" style="width:100%; margin-bottom:0.5rem;">
                 <option value="group">Group Stage</option>
                 <option value="semi">Semi-Final</option>
                 <option value="final">Final</option>
               </select>
-              <select id="matchTeam1Select"><option value="">Team 1...</option></select>
+              <select id="matchTeam1Select" style="width:100%;"><option value="">Team 1...</option></select>
             </div>
-            <div style="padding-top: 2rem; font-weight: bold; color: var(--text-muted);">VS</div>
-            <div>
+            <div style="padding-top: 2.2rem; font-weight: bold; color: var(--text-muted);">VS</div>
+            <div style="flex:1;">
               <br>
-              <select id="matchTeam2Select"><option value="">Team 2...</option></select>
+              <select id="matchTeam2Select" style="width:100%;"><option value="">Team 2...</option></select>
             </div>
-            <button style="margin-top:2rem;" onclick="createMatch()">Start Match</button>
+            <button style="margin-top:2rem; width:100%;" onclick="createMatch()">Start Match</button>
           </div>
         </div>
 
         <div class="admin-section">
-          <h3>Create New Team</h3>
-          <div class="form-group" style="align-items: center;">
-            <input type="text" id="newTeamName" placeholder="e.g. Futsal Kings" />
+          <h3>Team & Group Management</h3>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom:0.5rem;">Create teams and assign them to a group stage.</p>
+          <div class="form-group" style="align-items: center; margin-top:0;">
+            <input type="text" id="newTeamName" placeholder="e.g. Futsal Kings" style="flex:1; min-width:120px;" />
+            <select id="newTeamGroup">
+              <option value="A">Group A</option>
+              <option value="B">Group B</option>
+              <option value="C">Group C</option>
+              <option value="D">Group D</option>
+            </select>
             <button onclick="createTeam()">Add Team</button>
+          </div>
+          
+          <hr style="border-color: var(--border); margin: 1rem 0;"/>
+          
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom:0.5rem;">Move existing team to a different group.</p>
+          <div class="form-group" style="align-items: center; margin-top:0;">
+            <select id="moveTeamSelect" style="flex:1;"><option value="">Select Team...</option></select>
+            <select id="moveTeamGroup">
+              <option value="A">Group A</option>
+              <option value="B">Group B</option>
+              <option value="C">Group C</option>
+              <option value="D">Group D</option>
+            </select>
+            <button onclick="moveTeamGroup()" class="btn-warning">Move</button>
           </div>
         </div>
 
@@ -159,8 +180,8 @@
           <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom:0.5rem;">Format per line: Name, Jersey (e.g. John Doe, 10)</p>
           <div class="form-group" style="flex-direction: column; gap:0.5rem;">
             <select id="playerTeamSelect" style="width:100%;"><option value="">Select Team...</option></select>
-            <textarea id="batchPlayersInput" rows="4" style="width:100%;" placeholder="John Doe, 10&#10;Jane Smith, 7"></textarea>
-            <button onclick="batchCreatePlayers()">Import Players</button>
+            <textarea id="batchPlayersInput" rows="3" style="width:100%;" placeholder="John Doe, 10&#10;Jane Smith, 7"></textarea>
+            <button onclick="batchCreatePlayers()" style="width:100%;">Import Players</button>
           </div>
         </div>
       </div>
@@ -168,23 +189,8 @@
     </div>
 
     <h2 class="section-title">Tournament Standings</h2>
-    <div style="overflow-x:auto;">
-      <table>
-        <thead>
-          <tr>
-            <th>Team</th>
-            <th>P</th>
-            <th>W</th>
-            <th>D</th>
-            <th>L</th>
-            <th>GD</th>
-            <th>Pts</th>
-          </tr>
-        </thead>
-        <tbody id="standingsBody">
-          <tr><td colspan="7" style="text-align: center; color: var(--text-muted);">Loading standings...</td></tr>
-        </tbody>
-      </table>
+    <div id="standingsContainer">
+      <div style="text-align: center; color: var(--text-muted);">Loading standings...</div>
     </div>
 
     <h2 class="section-title">Matches Board</h2>
@@ -210,7 +216,7 @@
   </div>
 
 <script>
-  let state = { teams: [], players: [], matches: [], standings: [], isAdmin: false, adminToken: '' };
+  let state = { teams: [], players: [], matches: [], standings: {}, isAdmin: false, adminToken: '' };
 
   async function loadData() {
     try {
@@ -220,7 +226,7 @@
         state.teams = data.teams;
         state.players = data.players;
         state.matches = data.matches;
-        state.standings = data.standings;
+        state.standings = data.standings; // Note: standings is now an object grouped by Group Name
         renderDashboard();
         if(state.isAdmin) updateAdminDropdowns();
       }
@@ -290,9 +296,24 @@
 
   async function createTeam() {
     const input = document.getElementById('newTeamName');
+    const group = document.getElementById('newTeamGroup').value;
     if (!input.value) return;
-    try { await apiCall('/api/teams', 'POST', { name: input.value }); input.value = ''; loadData(); } 
+    try { 
+      await apiCall('/api/teams', 'POST', { name: input.value, group_name: group }); 
+      input.value = ''; 
+      loadData(); 
+    } 
     catch(e) { alert(e.message); }
+  }
+
+  async function moveTeamGroup() {
+    const tId = document.getElementById('moveTeamSelect').value;
+    const group = document.getElementById('moveTeamGroup').value;
+    if (!tId || !group) return alert('Select a team and target group.');
+    try {
+      await apiCall(`/api/teams/${tId}/group`, 'PUT', { group_name: group });
+      loadData();
+    } catch(e) { alert(e.message); }
   }
 
   async function deleteTeam(id) {
@@ -322,10 +343,11 @@
   }
 
   function updateAdminDropdowns() {
-    const options = '<option value="">Select...</option>' + state.teams.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+    const options = '<option value="">Select...</option>' + state.teams.map(t => `<option value="${t.id}">${t.name} (Grp ${t.group_name || 'A'})</option>`).join('');
     document.getElementById('playerTeamSelect').innerHTML = options;
     document.getElementById('matchTeam1Select').innerHTML = options;
     document.getElementById('matchTeam2Select').innerHTML = options;
+    document.getElementById('moveTeamSelect').innerHTML = options;
   }
 
   function getTeamName(id) {
@@ -339,35 +361,67 @@
   }
 
   function renderStandings() {
-    const tbody = document.getElementById('standingsBody');
-    if (state.standings.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted);">No match data yet.</td></tr>`;
+    const container = document.getElementById('standingsContainer');
+    const groupNames = Object.keys(state.standings).sort();
+    
+    if (groupNames.length === 0) {
+      container.innerHTML = `<div style="text-align: center; width: 100%; color: var(--text-muted); background:var(--surface); padding:2rem; border-radius:var(--radius);">No group data yet.</div>`;
       return;
     }
-    
-    tbody.innerHTML = state.standings.map((s, index) => {
-      // Highlight top 4 for Semi-Final spots
-      const isTop4 = index < 4 ? 'border-left: 3px solid var(--primary);' : '';
-      return `
-        <tr>
-          <td style="font-weight:bold; ${isTop4}">
-            <span style="color:var(--text-muted); margin-right:8px;">${index+1}.</span>${s.name}
-          </td>
-          <td>${s.played}</td>
-          <td>${s.won}</td>
-          <td>${s.drawn}</td>
-          <td>${s.lost}</td>
-          <td>${s.gd > 0 ? '+'+s.gd : s.gd}</td>
-          <td class="pts-col">${s.pts}</td>
-        </tr>
+
+    let html = '';
+    // Generate a table for each Group
+    groupNames.forEach(groupName => {
+      const teams = state.standings[groupName];
+      html += `
+        <div class="standings-wrapper">
+          <h3 class="group-header">Group ${groupName}</h3>
+          <div style="overflow-x:auto;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Team</th>
+                  <th>P</th>
+                  <th>W</th>
+                  <th>D</th>
+                  <th>L</th>
+                  <th>GD</th>
+                  <th>Pts</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${teams.map((s, index) => {
+                  // If multi-group, top 2 advance. If single group, top 4 advance. (Visual indicator only)
+                  const advanceThreshold = groupNames.length > 1 ? 2 : 4;
+                  const isAdvancing = index < advanceThreshold ? 'border-left: 3px solid var(--primary);' : '';
+                  return `
+                    <tr>
+                      <td style="font-weight:bold; ${isAdvancing}">
+                        <span style="color:var(--text-muted); margin-right:8px;">${index+1}.</span>${s.name}
+                      </td>
+                      <td>${s.played}</td>
+                      <td>${s.won}</td>
+                      <td>${s.drawn}</td>
+                      <td>${s.lost}</td>
+                      <td>${s.gd > 0 ? '+'+s.gd : s.gd}</td>
+                      <td class="pts-col">${s.pts}</td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
       `;
-    }).join('');
+    });
+    
+    container.innerHTML = html;
   }
 
   function renderMatches() {
     const grid = document.getElementById('matchesGrid');
     if (state.matches.length === 0) {
-      grid.innerHTML = `<div style="text-align: center; width: 100%; color: var(--text-muted);">No matches scheduled.</div>`;
+      grid.innerHTML = `<div style="text-align: center; width: 100%; color: var(--text-muted); background:var(--surface); padding:2rem; border-radius:var(--radius);">No matches scheduled.</div>`;
       return;
     }
 
@@ -419,7 +473,7 @@
   function renderTeams() {
     const grid = document.getElementById('teamsGrid');
     if (state.teams.length === 0) {
-      grid.innerHTML = `<div style="text-align: center; width: 100%; color: var(--text-muted);">No teams registered.</div>`;
+      grid.innerHTML = `<div style="text-align: center; width: 100%; color: var(--text-muted); background:var(--surface); padding:2rem; border-radius:var(--radius);">No teams registered.</div>`;
       return;
     }
 
@@ -429,7 +483,10 @@
       let html = `
         <div class="card" style="padding:1rem;">
           <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:0.5rem; margin-bottom:0.5rem;">
-            <h3 style="font-size: 1.2rem; margin:0;">${team.name}</h3>
+            <div>
+              <h3 style="font-size: 1.2rem; margin:0; display:inline-block;">${team.name}</h3>
+              <span style="font-size:0.75rem; color:var(--warning); margin-left:8px; border:1px solid var(--warning); padding:1px 4px; border-radius:4px;">Grp ${team.group_name || 'A'}</span>
+            </div>
             ${state.isAdmin ? `<button class="btn-danger btn-outline" style="padding:0.2rem 0.5rem; font-size:0.7rem;" onclick="deleteTeam(${team.id})">Delete</button>` : ''}
           </div>
           <div style="display:flex; flex-direction:column; gap:0.5rem;">
