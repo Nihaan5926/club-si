@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no" />
   <title>CLUB SI 3V3 Futsal Tournament</title>
   
   <!-- App Icons & PWA Tags for iOS and Android -->
   <link rel="icon" type="image/png" sizes="192x192" href="/logo-192.png">
   <link rel="apple-touch-icon" href="/logo-192.png">
-  <meta name="theme-color" content="#00ff88">
+  <meta name="theme-color" content="#4fc3f7">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="CLUB SI">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -16,44 +16,46 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Oswald:ital,wght@0,500;0,700;1,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:ital,wght@0,500;0,700;1,700&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      /* True Dark Glassmorphism Theme */
-      --surface: rgba(15, 23, 42, 0.45); 
-      --surface-hover: rgba(30, 41, 59, 0.55);
-      --glass-border: rgba(255, 255, 255, 0.1);
+      /* Mobile App Dark Red Surface Theme */
+      --surface: rgba(60, 0, 15, 0.65); 
+      --surface-hover: rgba(80, 0, 20, 0.75);
+      --glass-border: rgba(255, 255, 255, 0.12);
       --glass-highlight: rgba(255, 255, 255, 0.2);
       
       --text: #f8fafc;
-      --text-muted: #94a3b8;
+      --text-muted: #ffb3c6; /* Red-tinted muted text */
       
-      /* Sporty Neon Accents */
-      --primary: #00ff88; /* Neon Futsal Green */
-      --primary-hover: #00cc6a;
-      --danger: #ff0055; /* Neon Pink/Red */
-      --warning: #ffaa00; /* Neon Orange */
-      --success: #00e5ff; /* Neon Cyan */
+      /* Light Blue Accents */
+      --primary: #4fc3f7; /* Light Blue */
+      --primary-hover: #29b6f6;
+      --danger: #ff1744; /* Bright Neon Red */
+      --warning: #ffea00; /* Neon Yellow */
+      --success: #00e676; /* Neon Green */
       
-      --radius: 16px;
-      --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
-      --shadow-hover: 0 12px 40px 0 rgba(0, 255, 136, 0.15);
+      --radius: 24px; /* Mobile rounded corners */
+      --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+      --shadow-hover: 0 12px 40px 0 rgba(79, 195, 247, 0.2);
     }
     
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
-    /* LIVE STADIUM ORB BACKGROUND */
+    /* LIVE RED STADIUM ORB BACKGROUND */
     body { 
       font-family: 'Inter', system-ui, sans-serif; 
       color: var(--text); 
       line-height: 1.5; 
-      padding-bottom: 3rem;
       position: relative;
       overflow-x: hidden;
-      background-color: #050b14;
+      background-color: #1a0005; /* Deep dark red base */
       min-height: 100vh;
-      -webkit-tap-highlight-color: transparent; /* Removes tap flash on mobile */
+      -webkit-tap-highlight-color: transparent;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
     
     body::before, body::after {
@@ -62,21 +64,21 @@
       border-radius: 50%;
       filter: blur(100px);
       z-index: -1;
-      opacity: 0.6;
-      animation: float 20s infinite ease-in-out alternate;
+      opacity: 0.7;
+      animation: float 15s infinite ease-in-out alternate;
     }
 
     body::before {
-      top: -10%; left: -10%;
-      width: 50vw; height: 50vw;
-      background: radial-gradient(circle, rgba(0,255,136,0.15), transparent 70%);
+      top: -10%; left: -20%;
+      width: 70vw; height: 70vw;
+      background: radial-gradient(circle, rgba(255,0,85,0.25), transparent 70%);
       animation-delay: 0s;
     }
 
     body::after {
-      bottom: -10%; right: -10%;
-      width: 60vw; height: 60vw;
-      background: radial-gradient(circle, rgba(0,229,255,0.15), transparent 70%);
+      bottom: -10%; right: -20%;
+      width: 80vw; height: 80vw;
+      background: radial-gradient(circle, rgba(255,50,50,0.2), transparent 70%);
       animation-delay: -5s;
     }
 
@@ -92,260 +94,276 @@
       letter-spacing: 0.05em;
     }
 
+    /* Mobile App Constraint Wrapper */
+    .app-container {
+      width: 100%;
+      max-width: 500px; /* Looks like a phone centered on desktop */
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: transparent;
+    }
+
     header { 
-      background: rgba(10, 15, 25, 0.7); 
+      background: rgba(40, 0, 10, 0.85); 
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-      padding: 1rem 2rem; 
-      /* Add safe-area padding for modern iPhones */
+      padding: 1rem 1.5rem; 
       padding-top: calc(1rem + env(safe-area-inset-top)); 
       border-bottom: 1px solid var(--glass-border);
+      border-bottom-left-radius: 24px;
+      border-bottom-right-radius: 24px;
       box-shadow: 0 4px 30px rgba(0,0,0,0.5);
       display: flex; justify-content: space-between; align-items: center; 
       position: sticky; top: 0; z-index: 10; 
     }
     
     header h2 { 
-      color: var(--text); font-size: 1.75rem; margin: 0; font-style: italic;
-      text-shadow: 0 0 10px rgba(0,255,136,0.3);
+      color: var(--text); font-size: 1.5rem; margin: 0; font-style: italic;
+      text-shadow: 0 0 10px rgba(79,195,247,0.4);
     }
     header h2 span { color: var(--primary); }
     
-    .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+    .content-wrapper { padding: 1.5rem 1rem 4rem 1rem; }
     
     button { 
       font-family: 'Oswald', sans-serif; background: var(--primary); color: #000; 
-      border: none; padding: 0.6rem 1.2rem; border-radius: 8px; cursor: pointer; 
-      font-weight: 700; transition: all 0.3s ease; text-transform: uppercase;
-      font-size: 0.9rem; letter-spacing: 0.05em; box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
+      border: none; padding: 14px 20px; border-radius: 14px; cursor: pointer; 
+      font-weight: 700; transition: all 0.2s ease; text-transform: uppercase;
+      font-size: 1rem; letter-spacing: 0.05em; box-shadow: 0 4px 15px rgba(79, 195, 247, 0.2);
     }
-    button:hover { background: var(--primary-hover); transform: translateY(-2px) scale(1.02); box-shadow: 0 0 20px rgba(0, 255, 136, 0.5); }
-    button:active { transform: translateY(0); }
-    button.btn-danger { background: var(--danger); color: #fff; box-shadow: 0 0 15px rgba(255, 0, 85, 0.2); }
-    button.btn-warning { background: var(--warning); color: #000; box-shadow: 0 0 15px rgba(255, 170, 0, 0.2); }
+    button:active { transform: scale(0.96); box-shadow: none; }
+    button.btn-danger { background: var(--danger); color: #fff; box-shadow: 0 4px 15px rgba(255, 23, 68, 0.2); }
+    button.btn-warning { background: var(--warning); color: #000; box-shadow: 0 4px 15px rgba(255, 234, 0, 0.2); }
     button.btn-success { background: var(--success); color: #000; }
-    button.btn-outline { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-highlight); color: var(--text); box-shadow: none; }
+    button.btn-outline { background: rgba(255,255,255,0.08); border: 1px solid var(--glass-highlight); color: var(--text); box-shadow: none; padding: 10px 16px;}
     button:disabled { opacity: 0.5; cursor: not-allowed; box-shadow:none; }
 
     input, select, textarea { 
-      font-family: 'Inter', sans-serif; background: rgba(0, 0, 0, 0.3); color: var(--text); 
-      border: 1px solid var(--glass-border); padding: 0.7rem; border-radius: 8px; 
-      outline: none; transition: all 0.3s ease; max-width: 100%; font-size: 1rem; /* 1rem prevents auto-zoom on iOS */
+      font-family: 'Inter', sans-serif; background: rgba(0, 0, 0, 0.4); color: var(--text); 
+      border: 1px solid var(--glass-border); padding: 14px; border-radius: 14px; 
+      outline: none; transition: all 0.3s ease; width: 100%; font-size: 1rem; 
+      appearance: none; -webkit-appearance: none;
     }
-    input:focus, select:focus, textarea:focus { background: rgba(0, 0, 0, 0.5); border-color: var(--primary); box-shadow: 0 0 10px rgba(0, 255, 136, 0.2); }
-    select option { background: #0f172a; color: #fff; }
+    input:focus, select:focus, textarea:focus { background: rgba(0, 0, 0, 0.6); border-color: var(--primary); box-shadow: 0 0 10px rgba(79, 195, 247, 0.3); }
+    select { background-image: url('data:image/svg+xml;utf8,<svg fill="%23ffffff" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); background-repeat: no-repeat; background-position-x: 95%; background-position-y: center; }
+    select option { background: #1a0005; color: #fff; }
 
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+    .grid { display: flex; flex-direction: column; gap: 1.25rem; }
+    
     .card { 
       background: var(--surface); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
       border: 1px solid var(--glass-border); border-top: 1px solid var(--glass-highlight);
-      border-left: 1px solid var(--glass-highlight); border-radius: var(--radius); 
-      padding: 1.5rem; box-shadow: var(--shadow); transition: all 0.3s ease; overflow: hidden;
+      border-radius: var(--radius); padding: 1.25rem; box-shadow: var(--shadow); overflow: hidden;
     }
     
-    .match-card { text-align: center; position: relative; border-top: 3px solid var(--primary); }
+    .match-card { text-align: center; position: relative; border-top: 4px solid var(--primary); }
     .match-card[data-stage="semi"] { border-top-color: var(--warning); }
     .match-card[data-stage="final"] { border-top-color: var(--danger); }
     
-    .match-status { position: absolute; top: 12px; right: 12px; font-size: 0.75rem; padding: 0.3rem 0.6rem; border-radius: 4px; font-weight: bold; }
-    .status-live { background: rgba(0, 255, 136, 0.15); color: var(--primary); border: 1px solid var(--primary); animation: neon-pulse 2s infinite; }
-    .status-completed { background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid var(--glass-border); }
-    .stage-badge { position: absolute; top: 12px; left: 12px; font-size: 0.8rem; color: var(--text-muted); font-weight: bold; font-style: italic;}
+    .match-status { position: absolute; top: 16px; right: 16px; font-size: 0.75rem; padding: 0.4rem 0.8rem; border-radius: 8px; font-weight: bold; }
+    .status-live { background: rgba(79, 195, 247, 0.15); color: var(--primary); border: 1px solid var(--primary); animation: neon-pulse 2s infinite; }
+    .status-completed { background: rgba(255,255,255,0.08); color: var(--text-muted); border: 1px solid var(--glass-border); }
+    .stage-badge { position: absolute; top: 18px; left: 16px; font-size: 0.8rem; color: var(--text-muted); font-weight: bold; font-style: italic;}
 
     @keyframes neon-pulse { 
-      0% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.4); } 
-      70% { box-shadow: 0 0 0 8px rgba(0, 255, 136, 0); } 
-      100% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0); } 
+      0% { box-shadow: 0 0 0 0 rgba(79, 195, 247, 0.4); } 
+      70% { box-shadow: 0 0 0 8px rgba(79, 195, 247, 0); } 
+      100% { box-shadow: 0 0 0 0 rgba(79, 195, 247, 0); } 
     }
 
-    .scoreboard { display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin: 2.5rem 0 1rem 0; width: 100%; }
-    .score-team { flex: 1; font-size: 1.1rem; font-weight: 600; text-transform: uppercase; word-wrap: break-word; padding: 0 4px; line-height: 1.2; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-    .score-number { font-family: 'Oswald', sans-serif; font-size: 2.2rem; font-weight: 700; background: rgba(0,0,0,0.6); color: var(--primary); padding: 0.2rem 0.6rem; border-radius: 8px; border: 1px solid rgba(0,255,136,0.3); min-width: 55px; line-height: 1.2; box-shadow: inset 0 2px 10px rgba(0,0,0,0.8), 0 0 10px rgba(0,255,136,0.1); }
-    .score-vs { font-family: 'Oswald', sans-serif; font-size: 1rem; color: var(--text-muted); font-weight: bold; padding: 0 4px; font-style: italic;}
+    .scoreboard { display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin: 3.5rem 0 1rem 0; width: 100%; }
+    .score-team { flex: 1; font-size: 1rem; font-weight: 700; text-transform: uppercase; word-wrap: break-word; padding: 0 4px; line-height: 1.2; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+    .score-number { font-family: 'Oswald', sans-serif; font-size: 2.2rem; font-weight: 700; background: rgba(0,0,0,0.5); color: var(--primary); padding: 0.2rem 0.6rem; border-radius: 12px; border: 1px solid rgba(79, 195, 247, 0.3); min-width: 55px; line-height: 1.2; box-shadow: inset 0 2px 10px rgba(0,0,0,0.8), 0 0 10px rgba(79, 195, 247, 0.1); }
+    .score-vs { font-family: 'Oswald', sans-serif; font-size: 0.9rem; color: var(--text-muted); font-weight: bold; padding: 0 8px; font-style: italic;}
     
-    .standings-wrapper { margin-bottom: 2.5rem; background: var(--surface); backdrop-filter: blur(16px); border-radius: var(--radius); border: 1px solid var(--glass-border); box-shadow: var(--shadow); overflow: hidden; }
-    .group-header { font-size: 1.4rem; color: var(--primary); background: rgba(0,0,0,0.4); margin: 0; padding: 1rem; border-bottom: 1px solid var(--glass-border); font-style: italic; }
-    .table-responsive { overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; }
-    th, td { padding: 1rem; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
-    th { background: rgba(255,255,255,0.02); font-size: 0.85rem; color: var(--text-muted); font-weight: 700; }
-    td:first-child, th:first-child { text-align: left; }
+    .standings-wrapper { margin-bottom: 1.5rem; background: var(--surface); backdrop-filter: blur(16px); border-radius: var(--radius); border: 1px solid var(--glass-border); box-shadow: var(--shadow); overflow: hidden; }
+    .group-header { font-size: 1.25rem; color: var(--primary); background: rgba(0,0,0,0.5); margin: 0; padding: 1rem 1.25rem; border-bottom: 1px solid var(--glass-border); font-style: italic; }
+    .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    table { width: 100%; border-collapse: collapse; min-width: 320px; }
+    th, td { padding: 1.2rem 0.5rem; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 0.95rem; }
+    th { background: rgba(255,255,255,0.03); font-size: 0.8rem; color: var(--text-muted); font-weight: 700; padding: 1rem 0.5rem;}
+    td:first-child, th:first-child { text-align: left; padding-left: 1.25rem; }
+    td:last-child, th:last-child { padding-right: 1.25rem; }
     tr:last-child td { border-bottom: none; }
-    .pts-col { font-weight: bold; color: var(--primary); font-size: 1.2rem; }
+    .pts-col { font-weight: 800; color: var(--primary); font-size: 1.15rem; }
 
-    .admin-controls { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; }
-    .admin-controls button { padding: 0.4rem 0.6rem; font-size: 0.75rem; }
-    .admin-section { background: rgba(0,0,0,0.2); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--glass-border); }
-    .admin-section h3 { color: var(--primary); font-size: 1.2rem; margin-bottom: 0.5rem;}
-    .form-group { display: flex; gap: 1rem; align-items: flex-start; flex-wrap: wrap; margin-top: 1rem; }
+    .admin-controls { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; width: 100%; }
+    .admin-controls button { flex: 1; padding: 0.8rem 0.6rem; font-size: 0.85rem; border-radius: 10px; }
+    .admin-section { background: rgba(0,0,0,0.3); padding: 1.25rem; border-radius: 16px; border: 1px solid var(--glass-border); }
+    .admin-section h3 { color: var(--primary); font-size: 1.1rem; margin-bottom: 0.5rem;}
+    .form-group { display: flex; gap: 0.8rem; align-items: flex-start; flex-wrap: wrap; margin-top: 1rem; width: 100%; }
     
     .hidden { display: none !important; }
     .flex { display: flex; } .justify-between { justify-content: space-between; } .items-center { align-items: center; }
     .text-muted { color: var(--text-muted); }
     
-    .section-title { font-size: 2rem; margin-top: 3.5rem; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.5); font-style: italic; }
+    .section-title { font-size: 1.4rem; margin-top: 2.5rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; color: #fff; font-style: italic; letter-spacing: 0.05em; }
 
-    .modal-overlay { position: fixed; inset: 0; background: rgba(5, 11, 20, 0.85); backdrop-filter: blur(10px); display: flex; justify-content: center; align-items: center; z-index: 50; padding: 1rem; }
-    .modal { background: var(--surface); padding: 2rem; border-radius: var(--radius); width: 100%; max-width: 400px; border: 1px solid var(--glass-border); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8); }
+    /* Mobile Bottom-Sheet Modal */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: flex-end; z-index: 50; }
+    .modal { background: var(--surface); padding: 2rem 1.5rem; border-radius: 32px 32px 0 0; width: 100%; max-width: 500px; border-top: 1px solid var(--glass-border); box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.8); animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
 
     @media (max-width: 600px) {
-      header { flex-direction: column; gap: 1rem; text-align: center; }
-      .scoreboard { flex-direction: row; flex-wrap: nowrap; gap: 0.25rem; }
+      .scoreboard { gap: 0.25rem; }
       .score-team { font-size: 0.85rem; }
-      .score-number { font-size: 1.5rem; min-width: 40px; padding: 0.2rem 0.4rem; }
-      .score-vs { font-size: 0.75rem; }
-      .section-title { font-size: 1.5rem; }
+      .score-number { font-size: 1.8rem; min-width: 45px; }
     }
   </style>
 </head>
 <body>
 
+<div class="app-container">
   <header>
-    <h2>CLUB SI <span>3V3</span> FUTSAL</h2>
+    <h2>CLUB SI <span>3V3</span></h2>
     <div>
-      <button id="authBtn" class="btn-outline">Admin Access</button>
+      <button id="authBtn" class="btn-outline" style="padding: 8px 14px; font-size: 0.8rem; border-radius: 10px;">Admin</button>
     </div>
   </header>
 
-  <div class="container">
-    <div id="adminPanel" class="hidden card" style="margin-bottom: 2rem; border-color: var(--primary);">
-      <h2 style="color: var(--primary); font-family: 'Oswald', sans-serif; text-transform: uppercase;">Control Center</h2>
-      <p class="text-muted" style="margin-bottom: 1.5rem;">Manage tournament logic, groups, scores, and players.</p>
+  <div class="content-wrapper">
+    <div id="adminPanel" class="hidden card" style="margin-bottom: 2rem; border: 2px solid var(--primary); background: rgba(40,0,10,0.8);">
+      <h2 style="color: var(--primary); font-family: 'Oswald', sans-serif; font-size: 1.6rem; text-transform: uppercase;">Control Center</h2>
+      <p class="text-muted" style="margin-bottom: 1.5rem; font-size: 0.9rem;">Manage tournament logic, groups, scores, and players.</p>
       
       <div class="grid">
         <div class="admin-section">
           <h3>Create Match</h3>
           <div class="form-group" style="flex-direction: column;">
-            <div style="width:100%;">
-              <select id="matchStageSelect" style="width:100%; margin-bottom:1rem;">
-                <option value="group">Group Stage</option>
-                <option value="semi">Semi-Final</option>
-                <option value="final">Final</option>
-              </select>
-              <select id="matchTeam1Select" style="width:100%; margin-bottom:0.5rem;"><option value="">Team 1...</option></select>
-            </div>
-            <div style="font-weight: 800; color: var(--text-muted); align-self: center; font-size: 1.2rem; font-style:italic;">VS</div>
-            <div style="width:100%;">
-              <select id="matchTeam2Select" style="width:100%;"><option value="">Team 2...</option></select>
-            </div>
+            <select id="matchStageSelect" style="margin-bottom:0.5rem;">
+              <option value="group">Group Stage</option>
+              <option value="semi">Semi-Final</option>
+              <option value="final">Final</option>
+            </select>
+            <select id="matchTeam1Select"><option value="">Team 1...</option></select>
+            <div style="font-weight: 800; color: var(--text-muted); align-self: center; font-size: 1.2rem; font-style:italic; margin: 0.5rem 0;">VS</div>
+            <select id="matchTeam2Select"><option value="">Team 2...</option></select>
             <button style="margin-top:1rem; width:100%;" onclick="createMatch()">Kick Off Match</button>
           </div>
         </div>
 
         <div class="admin-section">
           <h3>Team & Group</h3>
-          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom:0.5rem;">Register team and assign to group.</p>
-          <div class="form-group" style="align-items: center; margin-top:0;">
-            <input type="text" id="newTeamName" placeholder="e.g. Futsal Kings" style="flex:1; min-width:120px;" />
-            <select id="newTeamGroup">
-              <option value="A">Grp A</option>
-              <option value="B">Grp B</option>
-              <option value="C">Grp C</option>
-              <option value="D">Grp D</option>
-            </select>
-            <button onclick="createTeam()">Add</button>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom:0.5rem;">Register team and assign to group.</p>
+          <div class="form-group" style="flex-direction: column; margin-top:0;">
+            <input type="text" id="newTeamName" placeholder="e.g. Futsal Kings" />
+            <div style="display:flex; gap: 0.8rem; width: 100%;">
+              <select id="newTeamGroup" style="flex:1;">
+                <option value="A">Grp A</option>
+                <option value="B">Grp B</option>
+                <option value="C">Grp C</option>
+                <option value="D">Grp D</option>
+              </select>
+              <button onclick="createTeam()" style="flex:1;">Add Team</button>
+            </div>
           </div>
           <hr style="border-color: var(--glass-border); margin: 1.5rem 0;"/>
-          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom:0.5rem;">Transfer team to a different group.</p>
-          <div class="form-group" style="align-items: center; margin-top:0;">
-            <select id="moveTeamSelect" style="flex:1;"><option value="">Select Team...</option></select>
-            <select id="moveTeamGroup">
-              <option value="A">Grp A</option>
-              <option value="B">Grp B</option>
-              <option value="C">Grp C</option>
-              <option value="D">Grp D</option>
-            </select>
-            <button onclick="moveTeamGroup()" class="btn-warning">Move</button>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom:0.5rem;">Transfer team to a different group.</p>
+          <div class="form-group" style="flex-direction: column; margin-top:0;">
+            <select id="moveTeamSelect"><option value="">Select Team...</option></select>
+            <div style="display:flex; gap: 0.8rem; width: 100%;">
+              <select id="moveTeamGroup" style="flex:1;">
+                <option value="A">Grp A</option>
+                <option value="B">Grp B</option>
+                <option value="C">Grp C</option>
+                <option value="D">Grp D</option>
+              </select>
+              <button onclick="moveTeamGroup()" class="btn-warning" style="flex:1;">Move</button>
+            </div>
           </div>
         </div>
 
         <div class="admin-section">
           <h3>Register Players</h3>
-          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom:0.5rem;">Add a single player manually.</p>
-          <div class="form-group" style="align-items: center; margin-top:0; margin-bottom: 1.5rem;">
-            <select id="singlePlayerTeam" style="width: 100%; margin-bottom: 0.5rem;"><option value="">Team...</option></select>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom:0.5rem;">Add a single player manually.</p>
+          <div class="form-group" style="flex-direction: column; margin-top:0; margin-bottom: 1.5rem;">
+            <select id="singlePlayerTeam" style="margin-bottom: 0.5rem;"><option value="">Team...</option></select>
             <div style="display:flex; gap:0.5rem; width:100%;">
-              <input type="text" id="spName" placeholder="Player Name" style="flex:1;" />
-              <input type="number" id="spJersey" placeholder="No." style="width:70px;" />
-              <button onclick="createSinglePlayer()">Add</button>
+              <input type="text" id="spName" placeholder="Name" style="flex:2;" />
+              <input type="number" id="spJersey" placeholder="No." style="flex:1;" />
             </div>
+            <button onclick="createSinglePlayer()" style="width: 100%;">Add Player</button>
           </div>
-          <hr style="border-color: var(--glass-border); margin: 1rem 0;"/>
-          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom:0.5rem;">Batch Import (Format: Name, Jersey)</p>
-          <div class="form-group" style="flex-direction: column; gap:0.5rem; margin-top: 0;">
-            <select id="playerTeamSelect" style="width:100%;"><option value="">Select Team...</option></select>
-            <textarea id="batchPlayersInput" rows="2" style="width:100%;" placeholder="John Doe, 10&#10;Jane Smith, 7"></textarea>
+          <hr style="border-color: var(--glass-border); margin: 1.5rem 0;"/>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom:0.5rem;">Batch Import (Format: Name, Jersey)</p>
+          <div class="form-group" style="flex-direction: column; gap:0.8rem; margin-top: 0;">
+            <select id="playerTeamSelect"><option value="">Select Team...</option></select>
+            <textarea id="batchPlayersInput" rows="3" placeholder="John Doe, 10&#10;Jane Smith, 7"></textarea>
             <button onclick="batchCreatePlayers()" style="width:100%;">Import Players</button>
           </div>
         </div>
       </div>
     </div>
 
-    <h2 class="section-title">Tournament Standings</h2>
+    <h2 class="section-title">Standings</h2>
     <div id="standingsContainer">
-      <div class="card" style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading standings...</div>
+      <div class="card" style="text-align: center; color: var(--text-muted); padding: 3rem 1rem;">Loading standings...</div>
     </div>
 
-    <h2 class="section-title">Match Board</h2>
-    <div id="matchesGrid" class="grid" style="margin-bottom: 3rem;">
-      <div class="card" style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading matches...</div>
+    <h2 class="section-title">Matches</h2>
+    <div id="matchesGrid" class="grid" style="margin-bottom: 2rem;">
+      <div class="card" style="text-align: center; color: var(--text-muted); padding: 3rem 1rem;">Loading matches...</div>
     </div>
 
     <h2 class="section-title">Team Rosters</h2>
     <div id="teamsGrid" class="grid">
-      <div class="card" style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading teams...</div>
+      <div class="card" style="text-align: center; color: var(--text-muted); padding: 3rem 1rem;">Loading teams...</div>
     </div>
   </div>
+</div> <!-- End App Container -->
 
   <div id="loginModal" class="modal-overlay hidden">
     <div class="modal">
-      <h3 style="margin-bottom: 1.5rem; color: var(--primary); text-align: center;">Admin Verification</h3>
-      <input type="password" id="adminPassInput" placeholder="Enter PIN" style="width: 100%; margin-bottom: 1.5rem; font-size: 1.2rem; text-align: center; letter-spacing: 0.2em;" />
-      <div class="flex justify-between">
-        <button class="btn-outline" onclick="toggleModal(false)">Cancel</button>
-        <button onclick="attemptLogin()">Unlock</button>
+      <div style="width: 40px; height: 5px; background: rgba(255,255,255,0.3); border-radius: 10px; margin: 0 auto 1.5rem auto;"></div>
+      <h3 style="margin-bottom: 1.5rem; color: var(--primary); text-align: center; font-size: 1.5rem;">Admin Verification</h3>
+      <input type="password" id="adminPassInput" placeholder="Enter PIN" style="width: 100%; margin-bottom: 2rem; font-size: 1.5rem; padding: 18px; text-align: center; letter-spacing: 0.3em;" />
+      <div class="flex" style="gap: 1rem;">
+        <button class="btn-outline" style="flex:1;" onclick="toggleModal(false)">Cancel</button>
+        <button style="flex:2;" onclick="attemptLogin()">Unlock</button>
       </div>
     </div>
   </div>
 
   <div id="editPlayerModal" class="modal-overlay hidden">
     <div class="modal">
-      <h3 style="margin-bottom: 1.5rem; color: var(--primary);">Edit Player Stats</h3>
+      <div style="width: 40px; height: 5px; background: rgba(255,255,255,0.3); border-radius: 10px; margin: 0 auto 1.5rem auto;"></div>
+      <h3 style="margin-bottom: 1.5rem; color: var(--primary); font-size: 1.5rem; text-align: center;">Edit Player Stats</h3>
       <input type="hidden" id="editPlayerId" />
-      <div class="form-group" style="flex-direction:column; gap:0.8rem; margin-top:0;">
-        <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
-          <label style="width:40%; font-weight: 500;">Name</label> 
-          <input type="text" id="epName" style="width:60%">
+      <div class="form-group" style="flex-direction:column; gap:1rem; margin-top:0;">
+        <div style="display:flex; justify-content:space-between; align-items:center; width:100%; gap: 1rem;">
+          <label style="width:30%; font-weight: 600; font-size: 0.9rem;">Name</label> 
+          <input type="text" id="epName" style="flex:1;">
         </div>
-        <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
-          <label style="width:40%; font-weight: 500;">Jersey #</label> 
-          <input type="number" id="epJersey" style="width:60%">
+        <div style="display:flex; justify-content:space-between; align-items:center; width:100%; gap: 1rem;">
+          <label style="width:30%; font-weight: 600; font-size: 0.9rem;">Jersey #</label> 
+          <input type="number" id="epJersey" style="flex:1;">
         </div>
-        <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
-          <label style="width:40%; font-weight: 500;">Goals ⚽</label> 
-          <input type="number" id="epGoals" style="width:60%">
+        <div style="display:flex; justify-content:space-between; align-items:center; width:100%; gap: 1rem;">
+          <label style="width:30%; font-weight: 600; font-size: 0.9rem;">Goals ⚽</label> 
+          <input type="number" id="epGoals" style="flex:1;">
         </div>
-        <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
-          <label style="width:40%; font-weight: 500;">Yellow 🟨</label> 
-          <input type="number" id="epYellow" style="width:60%">
+        <div style="display:flex; justify-content:space-between; align-items:center; width:100%; gap: 1rem;">
+          <label style="width:30%; font-weight: 600; font-size: 0.9rem;">Yellow 🟨</label> 
+          <input type="number" id="epYellow" style="flex:1;">
         </div>
-        <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
-          <label style="width:40%; font-weight: 500;">Red 🟥</label> 
-          <input type="number" id="epRed" style="width:60%">
+        <div style="display:flex; justify-content:space-between; align-items:center; width:100%; gap: 1rem;">
+          <label style="width:30%; font-weight: 600; font-size: 0.9rem;">Red 🟥</label> 
+          <input type="number" id="epRed" style="flex:1;">
         </div>
       </div>
-      <div class="flex justify-between" style="margin-top:2rem;">
-        <button class="btn-outline" onclick="toggleEditPlayerModal(false)">Cancel</button>
-        <button class="btn-success" onclick="savePlayerEdit()">Save Changes</button>
+      <div class="flex" style="margin-top:2.5rem; gap: 1rem;">
+        <button class="btn-outline" style="flex:1;" onclick="toggleEditPlayerModal(false)">Cancel</button>
+        <button class="btn-success" style="flex:2;" onclick="savePlayerEdit()">Save Changes</button>
       </div>
     </div>
   </div>
 
 <script>
-  /* 
-   * ALL JAVASCRIPT LOGIC REMAINS THE SAME. 
-   * It relies on your /api/ backend endpoints to load data. 
-   */
   let state = { teams: [], players: [], matches: [], standings: {}, isAdmin: false, adminToken: '' };
 
   async function loadData() {
@@ -366,7 +384,7 @@
   document.getElementById('authBtn').onclick = () => {
     if (state.isAdmin) {
       state.isAdmin = false; state.adminToken = '';
-      document.getElementById('authBtn').textContent = 'Admin Access';
+      document.getElementById('authBtn').textContent = 'Admin';
       document.getElementById('adminPanel').classList.add('hidden');
       renderDashboard();
     } else {
@@ -535,7 +553,7 @@
     const groupNames = Object.keys(state.standings).sort();
     
     if (groupNames.length === 0) {
-      container.innerHTML = `<div class="card" style="text-align: center; color: var(--text-muted);">No group data yet.</div>`;
+      container.innerHTML = `<div class="card" style="text-align: center; color: var(--text-muted); padding: 3rem 1rem;">No group data yet.</div>`;
       return;
     }
 
@@ -555,7 +573,8 @@
               <tbody>
                 ${teams.map((s, index) => {
                   const advanceThreshold = groupNames.length > 1 ? 2 : 4;
-                  const isAdvancing = index < advanceThreshold ? 'border-left: 4px solid var(--primary); background: rgba(0, 255, 136, 0.05);' : 'border-left: 4px solid transparent;';
+                  // Adjusted green to primary light blue for app look
+                  const isAdvancing = index < advanceThreshold ? 'border-left: 4px solid var(--primary); background: rgba(79, 195, 247, 0.08);' : 'border-left: 4px solid transparent;';
                   return `
                     <tr>
                       <td style="font-weight:600; ${isAdvancing}">
@@ -578,7 +597,7 @@
   function renderMatches() {
     const grid = document.getElementById('matchesGrid');
     if (state.matches.length === 0) {
-      grid.innerHTML = `<div class="card" style="grid-column: 1 / -1; text-align: center; color: var(--text-muted);">No matches scheduled.</div>`;
+      grid.innerHTML = `<div class="card" style="text-align: center; color: var(--text-muted); padding: 3rem 1rem;">No matches scheduled.</div>`;
       return;
     }
 
@@ -591,20 +610,20 @@
       let adminHTML = '';
       if (state.isAdmin) {
         adminHTML = `
-          <div style="margin-top: 1.5rem; border-top: 1px solid var(--glass-border); padding-top: 1rem;">
-            <div style="display:flex; flex-wrap:wrap; justify-content:space-between; gap: 1rem; margin-bottom: 1rem;">
-              <div class="admin-controls">
-                <button class="btn-outline" onclick="matchAction(${match.id}, 't1_sub')">-</button>
-                <button onclick="matchAction(${match.id}, 't1_add')">+ Goal</button>
+          <div style="margin-top: 1.5rem; border-top: 1px solid var(--glass-border); padding-top: 1.25rem;">
+            <div style="display:flex; flex-direction:column; gap: 0.8rem; margin-bottom: 1.5rem;">
+              <div class="admin-controls" style="display:flex; width:100%;">
+                <button class="btn-outline" style="flex:1;" onclick="matchAction(${match.id}, 't1_sub')">-</button>
+                <button style="flex:3;" onclick="matchAction(${match.id}, 't1_add')">+ Goal ${getTeamName(match.team1_id)}</button>
               </div>
-              <div class="admin-controls">
-                <button onclick="matchAction(${match.id}, 't2_add')">+ Goal</button>
-                <button class="btn-outline" onclick="matchAction(${match.id}, 't2_sub')">-</button>
+              <div class="admin-controls" style="display:flex; width:100%;">
+                <button class="btn-outline" style="flex:1;" onclick="matchAction(${match.id}, 't2_sub')">-</button>
+                <button style="flex:3;" onclick="matchAction(${match.id}, 't2_add')">+ Goal ${getTeamName(match.team2_id)}</button>
               </div>
             </div>
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <button class="btn-danger btn-outline" style="font-size:0.75rem; padding:0.3rem 0.6rem;" onclick="deleteMatch(${match.id})">Delete</button>
-              ${isLive ? `<button class="btn-success" style="font-size:0.75rem; padding:0.3rem 0.6rem;" onclick="matchAction(${match.id}, 'complete')">End Match</button>` : `<span style="font-size: 0.8rem; color: var(--text-muted); font-weight:600;">Match Ended</span>`}
+            <div style="display:flex; justify-content:space-between; align-items:center; gap: 1rem;">
+              <button class="btn-danger btn-outline" style="flex:1; font-size:0.8rem; padding:0.6rem;" onclick="deleteMatch(${match.id})">Delete</button>
+              ${isLive ? `<button class="btn-success" style="flex:2; font-size:0.8rem; padding:0.6rem;" onclick="matchAction(${match.id}, 'complete')">End Match</button>` : `<span style="flex:2; font-size: 0.9rem; color: var(--text-muted); font-weight:600;">Match Ended</span>`}
             </div>
           </div>
         `;
@@ -630,7 +649,7 @@
   function renderTeams() {
     const grid = document.getElementById('teamsGrid');
     if (state.teams.length === 0) {
-      grid.innerHTML = `<div class="card" style="grid-column: 1 / -1; text-align: center; color: var(--text-muted);">No teams registered.</div>`;
+      grid.innerHTML = `<div class="card" style="text-align: center; color: var(--text-muted); padding: 3rem 1rem;">No teams registered.</div>`;
       return;
     }
 
@@ -638,44 +657,50 @@
       const teamPlayers = state.players.filter(p => p.team_id === team.id);
       
       let html = `
-        <div class="card" style="padding:1.5rem;">
-          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--glass-border); padding-bottom:0.8rem; margin-bottom:1rem;">
+        <div class="card" style="padding:0;">
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--glass-border); padding: 1.25rem;">
             <div>
               <h3 style="font-size: 1.3rem; margin:0; display:inline-block; font-family:'Oswald', sans-serif;">${team.name}</h3>
-              <span style="font-size:0.75rem; color:var(--warning); margin-left:8px; border:1px solid var(--warning); font-weight:bold; padding:2px 6px; border-radius:4px;">Grp ${team.group_name || 'A'}</span>
+              <span style="font-size:0.75rem; color:var(--warning); margin-left:8px; border:1px solid var(--warning); font-weight:bold; padding:2px 8px; border-radius:8px;">Grp ${team.group_name || 'A'}</span>
             </div>
-            ${state.isAdmin ? `<button class="btn-danger btn-outline" style="padding:0.3rem 0.6rem; font-size:0.7rem;" onclick="deleteTeam(${team.id})">Delete</button>` : ''}
+            ${state.isAdmin ? `<button class="btn-danger btn-outline" style="padding:0.4rem 0.8rem; font-size:0.75rem; border-radius:10px;" onclick="deleteTeam(${team.id})">Delete</button>` : ''}
           </div>
-          <div style="display:flex; flex-direction:column; gap:0.6rem;">
+          <div style="display:flex; flex-direction:column;">
       `;
 
       if (teamPlayers.length === 0) {
-        html += `<div class="text-muted" style="font-size:0.9rem; font-style: italic;">No players assigned</div>`;
+        html += `<div class="text-muted" style="font-size:0.9rem; font-style: italic; padding: 1.5rem; text-align: center;">No players assigned</div>`;
       } else {
-        teamPlayers.forEach(p => {
+        teamPlayers.forEach((p, i) => {
+          const isLast = i === teamPlayers.length - 1;
+          const borderStyle = isLast ? '' : 'border-bottom: 1px solid rgba(255,255,255,0.06);';
           html += `
-            <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding:0.6rem 0.8rem; border-radius:8px;">
-              <div style="display:flex; align-items:center; gap:0.8rem;">
-                <div style="background:var(--primary); color:#000; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-family:'Oswald', sans-serif; font-weight:bold; box-shadow:0 0 10px rgba(0,255,136,0.3);">${p.jersey_number}</div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:1rem 1.25rem; ${borderStyle}">
+              <div style="display:flex; align-items:center; gap:1rem;">
+                <div style="background:var(--primary); color:#000; width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.9rem; font-family:'Oswald', sans-serif; font-weight:bold; box-shadow:0 0 12px rgba(79, 195, 247,0.3);">${p.jersey_number}</div>
                 <div>
-                  <span style="font-weight:600; font-size:0.95rem;">${p.name}</span>
+                  <div style="font-weight:600; font-size:1rem;">${p.name}</div>
                   ${state.isAdmin ? `
-                    <button class="btn-outline" style="font-size:0.6rem; padding:2px 6px; margin-left:6px; border-radius:4px;" onclick="openEditPlayerModal(${p.id})">✏️</button>
-                    <a href="#" style="font-size:0.8rem; color:var(--danger); text-decoration:none; margin-left:4px;" onclick="deletePlayer(${p.id})">❌</a>
+                    <div style="margin-top: 4px;">
+                      <button class="btn-outline" style="font-size:0.7rem; padding:4px 10px; border-radius:8px; display:inline-block;" onclick="openEditPlayerModal(${p.id})">Edit</button>
+                      <button class="btn-outline" style="font-size:0.7rem; color:var(--danger); border-color: rgba(255, 23, 68, 0.3); padding:4px 10px; margin-left:4px; border-radius:8px; display:inline-block;" onclick="deletePlayer(${p.id})">Remove</button>
+                    </div>
                   ` : ''}
                 </div>
               </div>
-              <div style="display:flex; gap:4px; align-items:center;">
-                ${state.isAdmin ? `
-                  <button style="font-size:0.8rem; padding:2px 6px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:4px; cursor:pointer; color:#fff;" onclick="updateStat(${p.id}, 'goal')">⚽</button>
-                  <button style="font-size:0.8rem; padding:2px 6px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:4px; cursor:pointer; color:#fff;" onclick="updateStat(${p.id}, 'yellow')">🟨</button>
-                  <button style="font-size:0.8rem; padding:2px 6px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:4px; cursor:pointer; color:#fff;" onclick="updateStat(${p.id}, 'red')">🟥</button>
-                ` : ''}
-                <div style="display:flex; gap:6px; margin-left:8px;">
-                  ${p.goals > 0 ? `<span style="background:rgba(255,255,255,0.2); color:#fff; font-size:0.75rem; padding:2px 6px; border-radius:4px; font-weight:bold;">${p.goals} ⚽</span>` : ''}
-                  ${p.yellow_cards > 0 ? `<span style="background:var(--warning); color:#000; font-size:0.75rem; padding:2px 6px; border-radius:4px; font-weight:bold;">${p.yellow_cards} 🟨</span>` : ''}
-                  ${p.red_cards > 0 ? `<span style="background:var(--danger); color:#fff; font-size:0.75rem; padding:2px 6px; border-radius:4px; font-weight:bold;">${p.red_cards} 🟥</span>` : ''}
+              <div style="display:flex; flex-direction:column; align-items:flex-end; gap: 8px;">
+                <div style="display:flex; gap:6px;">
+                  ${p.goals > 0 ? `<span style="background:rgba(255,255,255,0.15); color:#fff; font-size:0.8rem; padding:4px 8px; border-radius:8px; font-weight:bold;">${p.goals} ⚽</span>` : ''}
+                  ${p.yellow_cards > 0 ? `<span style="background:var(--warning); color:#000; font-size:0.8rem; padding:4px 8px; border-radius:8px; font-weight:bold;">${p.yellow_cards} 🟨</span>` : ''}
+                  ${p.red_cards > 0 ? `<span style="background:var(--danger); color:#fff; font-size:0.8rem; padding:4px 8px; border-radius:8px; font-weight:bold;">${p.red_cards} 🟥</span>` : ''}
                 </div>
+                ${state.isAdmin ? `
+                  <div style="display:flex; gap:6px; margin-top: 4px;">
+                    <button style="font-size:0.85rem; padding:4px 10px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); border-radius:8px; cursor:pointer; color:#fff;" onclick="updateStat(${p.id}, 'goal')">⚽+</button>
+                    <button style="font-size:0.85rem; padding:4px 10px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); border-radius:8px; cursor:pointer; color:#fff;" onclick="updateStat(${p.id}, 'yellow')">🟨+</button>
+                    <button style="font-size:0.85rem; padding:4px 10px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); border-radius:8px; cursor:pointer; color:#fff;" onclick="updateStat(${p.id}, 'red')">🟥+</button>
+                  </div>
+                ` : ''}
               </div>
             </div>
           `;
