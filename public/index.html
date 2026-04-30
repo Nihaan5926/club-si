@@ -2,9 +2,18 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>CLUB SI 3V3 Futsal Tournament</title>
   
+  <!-- App Icons & PWA Tags for iOS and Android -->
+  <link rel="icon" type="image/png" sizes="192x192" href="/logo-192.png">
+  <link rel="apple-touch-icon" href="/logo-192.png">
+  <meta name="theme-color" content="#00ff88">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="CLUB SI">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="/manifest.json">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Oswald:ital,wght@0,500;0,700;1,700&display=swap" rel="stylesheet">
@@ -34,10 +43,7 @@
     
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
-    /* ====================================
-      LIVE STADIUM ORB BACKGROUND 
-      ====================================
-    */
+    /* LIVE STADIUM ORB BACKGROUND */
     body { 
       font-family: 'Inter', system-ui, sans-serif; 
       color: var(--text); 
@@ -47,9 +53,9 @@
       overflow-x: hidden;
       background-color: #050b14;
       min-height: 100vh;
+      -webkit-tap-highlight-color: transparent; /* Removes tap flash on mobile */
     }
     
-    /* Animated Glowing Orbs Behind Glass */
     body::before, body::after {
       content: ""; 
       position: fixed; 
@@ -80,7 +86,6 @@
       100% { transform: translate(-5%, -5%) scale(0.9); } 
     }
 
-    /* Sporty Headers */
     h1, h2, h3, .stage-badge, .match-status, th {
       font-family: 'Oswald', sans-serif;
       text-transform: uppercase;
@@ -92,6 +97,8 @@
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       padding: 1rem 2rem; 
+      /* Add safe-area padding for modern iPhones */
+      padding-top: calc(1rem + env(safe-area-inset-top)); 
       border-bottom: 1px solid var(--glass-border);
       box-shadow: 0 4px 30px rgba(0,0,0,0.5);
       display: flex; justify-content: space-between; align-items: center; 
@@ -99,117 +106,50 @@
     }
     
     header h2 { 
-      color: var(--text); 
-      font-size: 1.75rem; 
-      margin: 0; 
-      font-style: italic;
+      color: var(--text); font-size: 1.75rem; margin: 0; font-style: italic;
       text-shadow: 0 0 10px rgba(0,255,136,0.3);
     }
     header h2 span { color: var(--primary); }
     
     .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
     
-    /* Buttons - Cyber/Sport Style */
     button { 
-      font-family: 'Oswald', sans-serif;
-      background: var(--primary); 
-      color: #000; 
-      border: none; 
-      padding: 0.6rem 1.2rem; 
-      border-radius: 8px; 
-      cursor: pointer; 
-      font-weight: 700; 
-      transition: all 0.3s ease; 
-      text-transform: uppercase;
-      font-size: 0.9rem;
-      letter-spacing: 0.05em;
-      box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
+      font-family: 'Oswald', sans-serif; background: var(--primary); color: #000; 
+      border: none; padding: 0.6rem 1.2rem; border-radius: 8px; cursor: pointer; 
+      font-weight: 700; transition: all 0.3s ease; text-transform: uppercase;
+      font-size: 0.9rem; letter-spacing: 0.05em; box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
     }
-    button:hover { 
-      background: var(--primary-hover); 
-      transform: translateY(-2px) scale(1.02); 
-      box-shadow: 0 0 20px rgba(0, 255, 136, 0.5); 
-    }
+    button:hover { background: var(--primary-hover); transform: translateY(-2px) scale(1.02); box-shadow: 0 0 20px rgba(0, 255, 136, 0.5); }
     button:active { transform: translateY(0); }
     button.btn-danger { background: var(--danger); color: #fff; box-shadow: 0 0 15px rgba(255, 0, 85, 0.2); }
-    button.btn-danger:hover { box-shadow: 0 0 20px rgba(255, 0, 85, 0.5); }
     button.btn-warning { background: var(--warning); color: #000; box-shadow: 0 0 15px rgba(255, 170, 0, 0.2); }
     button.btn-success { background: var(--success); color: #000; }
-    
-    button.btn-outline { 
-      background: rgba(255,255,255,0.05); 
-      border: 1px solid var(--glass-highlight); 
-      color: var(--text); 
-      box-shadow: none;
-    }
-    button.btn-outline:hover { 
-      background: rgba(255,255,255,0.1); 
-      border-color: var(--text); 
-    }
+    button.btn-outline { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-highlight); color: var(--text); box-shadow: none; }
     button:disabled { opacity: 0.5; cursor: not-allowed; box-shadow:none; }
 
-    /* Inputs - Dark Glass */
     input, select, textarea { 
-      font-family: 'Inter', sans-serif;
-      background: rgba(0, 0, 0, 0.3); 
-      color: var(--text); 
-      border: 1px solid var(--glass-border); 
-      padding: 0.7rem; 
-      border-radius: 8px; 
-      outline: none; 
-      transition: all 0.3s ease;
-      max-width: 100%;
+      font-family: 'Inter', sans-serif; background: rgba(0, 0, 0, 0.3); color: var(--text); 
+      border: 1px solid var(--glass-border); padding: 0.7rem; border-radius: 8px; 
+      outline: none; transition: all 0.3s ease; max-width: 100%; font-size: 1rem; /* 1rem prevents auto-zoom on iOS */
     }
-    input:focus, select:focus, textarea:focus { 
-      background: rgba(0, 0, 0, 0.5);
-      border-color: var(--primary); 
-      box-shadow: 0 0 10px rgba(0, 255, 136, 0.2); 
-    }
-    select option { background: #0f172a; color: #fff; } /* Fix dropdown readability */
+    input:focus, select:focus, textarea:focus { background: rgba(0, 0, 0, 0.5); border-color: var(--primary); box-shadow: 0 0 10px rgba(0, 255, 136, 0.2); }
+    select option { background: #0f172a; color: #fff; }
 
-    /* Layout & Cards (Deep Glassmorphism) */
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
     .card { 
-      background: var(--surface); 
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid var(--glass-border);
-      border-top: 1px solid var(--glass-highlight);
-      border-left: 1px solid var(--glass-highlight);
-      border-radius: var(--radius); 
-      padding: 1.5rem; 
-      box-shadow: var(--shadow); 
-      transition: all 0.3s ease;
-      overflow: hidden;
-    }
-    .card:hover { 
-      box-shadow: var(--shadow-hover); 
-      transform: translateY(-4px); 
-      border-color: rgba(0,255,136,0.3);
+      background: var(--surface); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border); border-top: 1px solid var(--glass-highlight);
+      border-left: 1px solid var(--glass-highlight); border-radius: var(--radius); 
+      padding: 1.5rem; box-shadow: var(--shadow); transition: all 0.3s ease; overflow: hidden;
     }
     
-    /* Match Cards */
     .match-card { text-align: center; position: relative; border-top: 3px solid var(--primary); }
     .match-card[data-stage="semi"] { border-top-color: var(--warning); }
     .match-card[data-stage="final"] { border-top-color: var(--danger); }
     
-    .match-status { 
-      position: absolute; top: 12px; right: 12px; 
-      font-size: 0.75rem; padding: 0.3rem 0.6rem; 
-      border-radius: 4px; font-weight: bold; 
-    }
-    .status-live { 
-      background: rgba(0, 255, 136, 0.15); 
-      color: var(--primary); 
-      border: 1px solid var(--primary); 
-      animation: neon-pulse 2s infinite; 
-    }
-    .status-completed { 
-      background: rgba(255,255,255,0.05); 
-      color: var(--text-muted); 
-      border: 1px solid var(--glass-border); 
-    }
-    
+    .match-status { position: absolute; top: 12px; right: 12px; font-size: 0.75rem; padding: 0.3rem 0.6rem; border-radius: 4px; font-weight: bold; }
+    .status-live { background: rgba(0, 255, 136, 0.15); color: var(--primary); border: 1px solid var(--primary); animation: neon-pulse 2s infinite; }
+    .status-completed { background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid var(--glass-border); }
     .stage-badge { position: absolute; top: 12px; left: 12px; font-size: 0.8rem; color: var(--text-muted); font-weight: bold; font-style: italic;}
 
     @keyframes neon-pulse { 
@@ -218,116 +158,36 @@
       100% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0); } 
     }
 
-    /* Scoreboard - Digital Stadium Style */
-    .scoreboard { 
-      display: flex; 
-      align-items: center; 
-      justify-content: center; 
-      gap: 0.5rem; 
-      margin: 2.5rem 0 1rem 0; 
-      width: 100%;
-    }
-    .score-team { 
-      flex: 1; 
-      font-size: 1.1rem; 
-      font-weight: 600; 
-      text-transform: uppercase;
-      word-wrap: break-word;
-      padding: 0 4px;
-      line-height: 1.2;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-    }
-    .score-number { 
-      font-family: 'Oswald', sans-serif;
-      font-size: 2.2rem; 
-      font-weight: 700; 
-      background: rgba(0,0,0,0.6); 
-      color: var(--primary);
-      padding: 0.2rem 0.6rem; 
-      border-radius: 8px; 
-      border: 1px solid rgba(0,255,136,0.3); 
-      min-width: 55px; 
-      line-height: 1.2;
-      box-shadow: inset 0 2px 10px rgba(0,0,0,0.8), 0 0 10px rgba(0,255,136,0.1);
-    }
+    .scoreboard { display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin: 2.5rem 0 1rem 0; width: 100%; }
+    .score-team { flex: 1; font-size: 1.1rem; font-weight: 600; text-transform: uppercase; word-wrap: break-word; padding: 0 4px; line-height: 1.2; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+    .score-number { font-family: 'Oswald', sans-serif; font-size: 2.2rem; font-weight: 700; background: rgba(0,0,0,0.6); color: var(--primary); padding: 0.2rem 0.6rem; border-radius: 8px; border: 1px solid rgba(0,255,136,0.3); min-width: 55px; line-height: 1.2; box-shadow: inset 0 2px 10px rgba(0,0,0,0.8), 0 0 10px rgba(0,255,136,0.1); }
     .score-vs { font-family: 'Oswald', sans-serif; font-size: 1rem; color: var(--text-muted); font-weight: bold; padding: 0 4px; font-style: italic;}
     
-    /* Standings */
-    .standings-wrapper { 
-      margin-bottom: 2.5rem; 
-      background: var(--surface); 
-      backdrop-filter: blur(16px); 
-      border-radius: var(--radius); 
-      border: 1px solid var(--glass-border); 
-      box-shadow: var(--shadow); 
-      overflow: hidden; 
-    }
-    .group-header { 
-      font-size: 1.4rem; 
-      color: var(--primary); 
-      background: rgba(0,0,0,0.4); 
-      margin: 0; 
-      padding: 1rem; 
-      border-bottom: 1px solid var(--glass-border);
-      font-style: italic;
-    }
+    .standings-wrapper { margin-bottom: 2.5rem; background: var(--surface); backdrop-filter: blur(16px); border-radius: var(--radius); border: 1px solid var(--glass-border); box-shadow: var(--shadow); overflow: hidden; }
+    .group-header { font-size: 1.4rem; color: var(--primary); background: rgba(0,0,0,0.4); margin: 0; padding: 1rem; border-bottom: 1px solid var(--glass-border); font-style: italic; }
     .table-responsive { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; }
     th, td { padding: 1rem; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
     th { background: rgba(255,255,255,0.02); font-size: 0.85rem; color: var(--text-muted); font-weight: 700; }
     td:first-child, th:first-child { text-align: left; }
     tr:last-child td { border-bottom: none; }
-    tr:hover td { background: rgba(255,255,255,0.05); }
     .pts-col { font-weight: bold; color: var(--primary); font-size: 1.2rem; }
 
-    /* Admin Section */
     .admin-controls { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; }
     .admin-controls button { padding: 0.4rem 0.6rem; font-size: 0.75rem; }
-    .admin-section { 
-      background: rgba(0,0,0,0.2); 
-      padding: 1.5rem; 
-      border-radius: 12px; 
-      border: 1px solid var(--glass-border); 
-    }
+    .admin-section { background: rgba(0,0,0,0.2); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--glass-border); }
     .admin-section h3 { color: var(--primary); font-size: 1.2rem; margin-bottom: 0.5rem;}
     .form-group { display: flex; gap: 1rem; align-items: flex-start; flex-wrap: wrap; margin-top: 1rem; }
     
-    /* Utility */
     .hidden { display: none !important; }
     .flex { display: flex; } .justify-between { justify-content: space-between; } .items-center { align-items: center; }
     .text-muted { color: var(--text-muted); }
     
-    /* Section Titles */
-    .section-title { 
-      font-size: 2rem; 
-      margin-top: 3.5rem; 
-      margin-bottom: 1.5rem; 
-      padding-bottom: 0.5rem; 
-      border-bottom: 1px solid var(--glass-border); 
-      display: flex; justify-content: space-between; align-items: center;
-      color: #fff;
-      text-shadow: 0 2px 10px rgba(0,0,0,0.5);
-      font-style: italic;
-    }
+    .section-title { font-size: 2rem; margin-top: 3.5rem; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.5); font-style: italic; }
 
-    /* Modals */
-    .modal-overlay { 
-      position: fixed; inset: 0; 
-      background: rgba(5, 11, 20, 0.85); 
-      backdrop-filter: blur(10px); 
-      display: flex; justify-content: center; align-items: center; 
-      z-index: 50; padding: 1rem; 
-    }
-    .modal { 
-      background: var(--surface); 
-      padding: 2rem; 
-      border-radius: var(--radius); 
-      width: 100%; max-width: 400px; 
-      border: 1px solid var(--glass-border); 
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8); 
-    }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(5, 11, 20, 0.85); backdrop-filter: blur(10px); display: flex; justify-content: center; align-items: center; z-index: 50; padding: 1rem; }
+    .modal { background: var(--surface); padding: 2rem; border-radius: var(--radius); width: 100%; max-width: 400px; border: 1px solid var(--glass-border); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8); }
 
-    /* Mobile Responsive Tweaks */
     @media (max-width: 600px) {
       header { flex-direction: column; gap: 1rem; text-align: center; }
       .scoreboard { flex-direction: row; flex-wrap: nowrap; gap: 0.25rem; }
@@ -385,9 +245,7 @@
             </select>
             <button onclick="createTeam()">Add</button>
           </div>
-          
           <hr style="border-color: var(--glass-border); margin: 1.5rem 0;"/>
-          
           <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom:0.5rem;">Transfer team to a different group.</p>
           <div class="form-group" style="align-items: center; margin-top:0;">
             <select id="moveTeamSelect" style="flex:1;"><option value="">Select Team...</option></select>
@@ -403,7 +261,6 @@
 
         <div class="admin-section">
           <h3>Register Players</h3>
-          
           <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom:0.5rem;">Add a single player manually.</p>
           <div class="form-group" style="align-items: center; margin-top:0; margin-bottom: 1.5rem;">
             <select id="singlePlayerTeam" style="width: 100%; margin-bottom: 0.5rem;"><option value="">Team...</option></select>
@@ -413,9 +270,7 @@
               <button onclick="createSinglePlayer()">Add</button>
             </div>
           </div>
-
           <hr style="border-color: var(--glass-border); margin: 1rem 0;"/>
-
           <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom:0.5rem;">Batch Import (Format: Name, Jersey)</p>
           <div class="form-group" style="flex-direction: column; gap:0.5rem; margin-top: 0;">
             <select id="playerTeamSelect" style="width:100%;"><option value="">Select Team...</option></select>
@@ -487,6 +342,10 @@
   </div>
 
 <script>
+  /* 
+   * ALL JAVASCRIPT LOGIC REMAINS THE SAME. 
+   * It relies on your /api/ backend endpoints to load data. 
+   */
   let state = { teams: [], players: [], matches: [], standings: {}, isAdmin: false, adminToken: '' };
 
   async function loadData() {
@@ -518,13 +377,8 @@
   function toggleModal(show) {
     const m = document.getElementById('loginModal');
     const input = document.getElementById('adminPassInput');
-    if (show) {
-      m.classList.remove('hidden');
-      input.focus();
-    } else {
-      m.classList.add('hidden');
-      input.value = ''; 
-    }
+    if (show) { m.classList.remove('hidden'); input.focus(); } 
+    else { m.classList.add('hidden'); input.value = ''; }
   }
 
   function attemptLogin() {
@@ -536,8 +390,7 @@
       toggleModal(false); 
       updateAdminDropdowns(); renderDashboard();
     } else { 
-      alert('Invalid PIN'); 
-      document.getElementById('adminPassInput').value = ''; 
+      alert('Invalid PIN'); document.getElementById('adminPassInput').value = ''; 
     }
   }
 
@@ -579,20 +432,16 @@
     if (!input.value) return;
     try { 
       await apiCall('/api/teams', 'POST', { name: input.value, group_name: group }); 
-      input.value = ''; 
-      loadData(); 
-    } 
-    catch(e) { alert(e.message); }
+      input.value = ''; loadData(); 
+    } catch(e) { alert(e.message); }
   }
 
   async function moveTeamGroup() {
     const tId = document.getElementById('moveTeamSelect').value;
     const group = document.getElementById('moveTeamGroup').value;
     if (!tId || !group) return alert('Select a team and target group.');
-    try {
-      await apiCall(`/api/teams/${tId}/group`, 'PUT', { group_name: group });
-      loadData();
-    } catch(e) { alert(e.message); }
+    try { await apiCall(`/api/teams/${tId}/group`, 'PUT', { group_name: group }); loadData(); } 
+    catch(e) { alert(e.message); }
   }
 
   async function deleteTeam(id) {
@@ -636,8 +485,7 @@
 
   function toggleEditPlayerModal(show) {
     const m = document.getElementById('editPlayerModal');
-    if (show) m.classList.remove('hidden');
-    else m.classList.add('hidden');
+    if (show) m.classList.remove('hidden'); else m.classList.add('hidden');
   }
 
   function openEditPlayerModal(id) {
@@ -663,8 +511,7 @@
     };
     try {
       await apiCall(`/api/players/${id}`, 'PUT', body);
-      toggleEditPlayerModal(false);
-      loadData();
+      toggleEditPlayerModal(false); loadData();
     } catch (e) { alert(e.message); }
   }
 
@@ -681,11 +528,7 @@
     const t = state.teams.find(t => t.id === id); return t ? t.name : 'Unknown';
   }
 
-  function renderDashboard() {
-    renderStandings();
-    renderMatches();
-    renderTeams();
-  }
+  function renderDashboard() { renderStandings(); renderMatches(); renderTeams(); }
 
   function renderStandings() {
     const container = document.getElementById('standingsContainer');
@@ -706,13 +549,7 @@
             <table>
               <thead>
                 <tr>
-                  <th>Team</th>
-                  <th>P</th>
-                  <th>W</th>
-                  <th>D</th>
-                  <th>L</th>
-                  <th>GD</th>
-                  <th>Pts</th>
+                  <th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>Pts</th>
                 </tr>
               </thead>
               <tbody>
@@ -724,12 +561,8 @@
                       <td style="font-weight:600; ${isAdvancing}">
                         <span style="color:var(--text-muted); margin-right:8px;">${index+1}.</span>${s.name}
                       </td>
-                      <td>${s.played}</td>
-                      <td>${s.won}</td>
-                      <td>${s.drawn}</td>
-                      <td>${s.lost}</td>
-                      <td>${s.gd > 0 ? '+'+s.gd : s.gd}</td>
-                      <td class="pts-col">${s.pts}</td>
+                      <td>${s.played}</td><td>${s.won}</td><td>${s.drawn}</td><td>${s.lost}</td>
+                      <td>${s.gd > 0 ? '+'+s.gd : s.gd}</td><td class="pts-col">${s.pts}</td>
                     </tr>
                   `;
                 }).join('')}
@@ -739,7 +572,6 @@
         </div>
       `;
     });
-    
     container.innerHTML = html;
   }
 
@@ -854,7 +686,6 @@
     }).join('');
   }
 
-  // Load mock data initialization (assuming standard fetch usage)
   loadData();
 </script>
 </body>
