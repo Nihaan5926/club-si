@@ -164,6 +164,7 @@
       outline: none; transition: all 0.3s ease; width: 100%; font-size: 1rem; 
       appearance: none; -webkit-appearance: none;
     }
+    input[type="time"]::-webkit-calendar-picker-indicator { filter: invert(1); }
     input:focus, select:focus, textarea:focus { background: rgba(0, 0, 0, 0.6); border-color: var(--primary); box-shadow: 0 0 10px rgba(79, 195, 247, 0.3); }
     select { background-image: url('data:image/svg+xml;utf8,<svg fill="%23ffffff" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); background-repeat: no-repeat; background-position-x: 95%; background-position-y: center; }
     select option { background: #1a0005; color: #fff; }
@@ -182,6 +183,7 @@
     .status-live { background: rgba(79, 195, 247, 0.15); color: var(--primary); border: 1px solid var(--primary); animation: neon-pulse 2s infinite; }
     .status-completed { background: rgba(255,255,255,0.08); color: var(--text-muted); border: 1px solid var(--glass-border); }
     .stage-badge { position: absolute; top: 18px; left: 16px; font-size: 0.8rem; color: var(--text-muted); font-weight: bold; font-style: italic;}
+    .match-time { position: absolute; top: 38px; left: 16px; font-size: 0.75rem; color: #fff; font-family: 'Inter', sans-serif; display: flex; align-items: center; gap: 4px; background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 6px;}
 
     @keyframes neon-pulse { 0% { box-shadow: 0 0 0 0 rgba(79, 195, 247, 0.4); } 70% { box-shadow: 0 0 0 8px rgba(79, 195, 247, 0); } 100% { box-shadow: 0 0 0 0 rgba(79, 195, 247, 0); } }
 
@@ -267,6 +269,7 @@
                 <option value="semi">Semi-Final</option>
                 <option value="final">Final</option>
               </select>
+              <input type="time" id="matchTimeInput" style="margin-bottom:0.5rem;" />
               <select id="matchTeam1Select"><option value="">Team 1...</option></select>
               <div style="font-weight: 800; color: var(--text-muted); align-self: center; font-size: 1.2rem; font-style:italic; margin: 0.5rem 0;">VS</div>
               <select id="matchTeam2Select"><option value="">Team 2...</option></select>
@@ -482,9 +485,11 @@
     const t1 = document.getElementById('matchTeam1Select').value;
     const t2 = document.getElementById('matchTeam2Select').value;
     const stage = document.getElementById('matchStageSelect').value;
+    const time = document.getElementById('matchTimeInput').value;
+    
     if (!t1 || !t2) return alert('Select both teams.');
     if (t1 === t2) return alert('Cannot match a team against itself.');
-    try { await apiCall('/api/matches', 'POST', { team1_id: t1, team2_id: t2, stage }); loadData(); alert("Match Created!");} 
+    try { await apiCall('/api/matches', 'POST', { team1_id: t1, team2_id: t2, stage, time }); loadData(); alert("Match Created!");} 
     catch(e) { alert(e.message); }
   }
 
@@ -635,6 +640,7 @@
       const badgeClass = isLive ? 'status-live' : 'status-completed';
       const badgeText = isLive ? 'LIVE' : 'FINAL';
       const stageFormat = match.stage === 'semi' ? 'Semi-Final' : match.stage === 'final' ? 'Final' : 'Group Stage';
+      const timeDisplay = match.time ? `<div class="match-time">⏱️ ${match.time}</div>` : '';
 
       let adminHTML = '';
       if (state.isAdmin) {
@@ -661,12 +667,13 @@
       return `
         <div class="card match-card" data-stage="${match.stage}">
           <div class="stage-badge">${stageFormat}</div>
+          ${timeDisplay}
           <div class="match-status ${badgeClass}">${badgeText}</div>
           <div class="scoreboard">
             <div class="score-team">${getTeamName(match.team1_id)}</div>
-            <div class="score-number">${match.team1_score}</div>
+            <div class="score-number">${match.team1_score || 0}</div>
             <div class="score-vs">VS</div>
-            <div class="score-number">${match.team2_score}</div>
+            <div class="score-number">${match.team2_score || 0}</div>
             <div class="score-team">${getTeamName(match.team2_id)}</div>
           </div>
           ${adminHTML}
