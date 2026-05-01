@@ -51,13 +51,15 @@ if (DATABASE_URL) {
           team2_score INTEGER DEFAULT 0,
           status VARCHAR(50) DEFAULT 'live',
           stage VARCHAR(50) DEFAULT 'group',
+          time VARCHAR(20),
           created_at TIMESTAMP DEFAULT NOW()
         );
         
         ALTER TABLE matches ADD COLUMN IF NOT EXISTS stage VARCHAR(50) DEFAULT 'group';
+        ALTER TABLE matches ADD COLUMN IF NOT EXISTS time VARCHAR(20);
         ALTER TABLE teams ADD COLUMN IF NOT EXISTS group_name VARCHAR(50) DEFAULT 'A';
       `);
-      console.log('Postgres DB ready for Futsal App (with Multi-Group Support)');
+      console.log('Postgres DB ready for Futsal App (with Multi-Group & Time Support)');
     } catch (e) {
       console.error('DB init error:', e.message);
       pool = null; 
@@ -291,18 +293,21 @@ app.post('/api/players/:id/stats', requireAdmin, async (req, res) => {
 });
 
 app.post('/api/matches', requireAdmin, async (req, res) => {
-  const { team1_id, team2_id, stage } = req.body;
+  // Extract time from the request body
+  const { team1_id, team2_id, stage, time } = req.body;
   if (!team1_id || !team2_id || team1_id === team2_id) return res.status(400).json({ ok: false, error: 'Invalid teams' });
   
   try {
     if (pool) {
+      // Pass the time value into the query
       const r = await pool.query(
-        'INSERT INTO matches (team1_id, team2_id, status, stage) VALUES ($1, $2, $3, $4) RETURNING *;',
-        [team1_id, team2_id, 'live', stage || 'group']
+        'INSERT INTO matches (team1_id, team2_id, status, stage, time) VALUES ($1, $2, $3, $4, $5) RETURNING *;',
+        [team1_id, team2_id, 'live', stage || 'group', time || null]
       );
       res.json({ ok: true, match: r.rows[0] });
     } else {
-      const match = { id: mem.matchIdSeq++, team1_id: parseInt(team1_id), team2_id: parseInt(team2_id), team1_score: 0, team2_score: 0, status: 'live', stage: stage||'group', created_at: new Date() };
+      // Save the time value to the in-memory array
+      const match = { id: mem.matchIdSeq++, team1_id: parseInt(team1_id), team2_id: parseInt(team2_id), team1_score: 0, team2_score: 0, status: 'live', stage: stage||'group', time: time || null, created_at: new Date() };
       mem.matches.push(match);
       res.json({ ok: true, match });
     }
@@ -377,11 +382,11 @@ app.post('/api/matches/:id/action', requireAdmin, async (req, res) => {
           
           if (semi1_team1 && semi1_team2 && semi2_team1 && semi2_team2) {
             if (pool) {
-              await pool.query('INSERT INTO matches (team1_id, team2_id, status, stage) VALUES ($1, $2, $3, $4), ($5, $6, $7, $8);', 
+              await pool.query('INSERT INTO matches (team1_id, team2_id, status, stage, time) VALUES ($1, $2, $3, $4, null), ($5, $6, $7, $8, null);', 
                 [semi1_team1, semi1_team2, 'live', 'semi', semi2_team1, semi2_team2, 'live', 'semi']);
             } else {
-              mem.matches.push({ id: mem.matchIdSeq++, team1_id: semi1_team1, team2_id: semi1_team2, team1_score: 0, team2_score: 0, status: 'live', stage: 'semi', created_at: new Date() });
-              mem.matches.push({ id: mem.matchIdSeq++, team1_id: semi2_team1, team2_id: semi2_team2, team1_score: 0, team2_score: 0, status: 'live', stage: 'semi', created_at: new Date() });
+              mem.matches.push({ id: mem.matchIdSeq++, team1_id: semi1_team1, team2_id: semi1_team2, team1_score: 0, team2_score: 0, status: 'live', stage: 'semi', time: null, created_at: new Date() });
+              mem.matches.push({ id: mem.matchIdSeq++, team1_id: semi2_team1, team2_id: semi2_team2, team1_score: 0, team2_score: 0, status: 'live', stage: 'semi', time: null, created_at: new Date() });
             }
             console.log("Auto-generated Semi-Finals based on Group Standings.");
           }
