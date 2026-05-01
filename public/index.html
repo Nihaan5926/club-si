@@ -134,7 +134,7 @@
       align-items: center;
       color: var(--text-muted);
       text-decoration: none;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       font-weight: 600;
       gap: 4px;
       cursor: pointer;
@@ -164,7 +164,6 @@
       outline: none; transition: all 0.3s ease; width: 100%; font-size: 1rem; 
       appearance: none; -webkit-appearance: none;
     }
-    /* Fixed Time input appearance for better visibility */
     input[type="time"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
 
     input:focus, select:focus, textarea:focus { background: rgba(0, 0, 0, 0.6); border-color: var(--primary); box-shadow: 0 0 10px rgba(79, 195, 247, 0.3); }
@@ -178,6 +177,12 @@
       border-radius: var(--radius); padding: 1.25rem; box-shadow: var(--shadow); overflow: hidden;
     }
     
+    /* Dashboard Specific Styles */
+    .stat-card { text-align: center; padding: 1rem; border-top: 3px solid; }
+    .stat-card h3 { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.2rem; font-style: italic; }
+    .stat-card p { font-family: 'Oswald', sans-serif; font-size: 2.2rem; color: #fff; font-weight: 700; margin: 0; line-height: 1; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+    .overview-title { font-size: 1.2rem; color: var(--primary); margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
+
     .match-card { text-align: center; position: relative; border-top: 4px solid var(--primary); }
     .match-card[data-stage="semi"] { border-top-color: var(--warning); }
     .match-card[data-stage="final"] { border-top-color: var(--danger); }
@@ -186,19 +191,7 @@
     .status-completed { background: rgba(255,255,255,0.08); color: var(--text-muted); border: 1px solid var(--glass-border); }
     .stage-badge { position: absolute; top: 18px; left: 16px; font-size: 0.8rem; color: var(--text-muted); font-weight: bold; font-style: italic;}
     
-    /* NEW TIME BADGE CSS */
-    .match-time { 
-      position: absolute; 
-      top: 16px; 
-      left: 50%; 
-      transform: translateX(-50%); 
-      font-size: 0.8rem; 
-      background: rgba(0,0,0,0.5); 
-      color: #fff; 
-      padding: 0.3rem 0.8rem; 
-      border-radius: 12px; 
-      border: 1px solid rgba(255,255,255,0.1); 
-    }
+    .match-time { position: absolute; top: 16px; left: 50%; transform: translateX(-50%); font-size: 0.8rem; background: rgba(0,0,0,0.5); color: #fff; padding: 0.3rem 0.8rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); }
 
     @keyframes neon-pulse { 0% { box-shadow: 0 0 0 0 rgba(79, 195, 247, 0.4); } 70% { box-shadow: 0 0 0 8px rgba(79, 195, 247, 0); } 100% { box-shadow: 0 0 0 0 rgba(79, 195, 247, 0); } }
 
@@ -244,7 +237,7 @@
 
 <div class="app-container">
   <header>
-    <h2 id="header-title">CLUB SI <span>GROUPS</span></h2>
+    <h2 id="header-title">CLUB SI <span>DASHBOARD</span></h2>
     <div>
       <button id="authBtn" class="btn-outline" style="padding: 8px 14px; font-size: 0.8rem; border-radius: 10px;">Login</button>
     </div>
@@ -252,7 +245,14 @@
 
   <div class="content-wrapper">
     
-    <div id="view-standings" class="view active">
+    <!-- NEW DASHBOARD / OVERVIEW VIEW -->
+    <div id="view-overview" class="view active">
+      <div id="overviewContainer">
+        <div class="card" style="text-align: center; color: var(--text-muted); padding: 3rem 1rem;">Loading dashboard...</div>
+      </div>
+    </div>
+
+    <div id="view-standings" class="view">
       <div id="standingsContainer">
         <div class="card" style="text-align: center; color: var(--text-muted); padding: 3rem 1rem;">Loading standings...</div>
       </div>
@@ -284,7 +284,6 @@
                 <option value="semi">Semi-Final</option>
                 <option value="final">Final</option>
               </select>
-              <!-- NEW TIME INPUT -->
               <input type="time" id="matchTimeInput" style="margin-bottom:0.5rem;" />
 
               <select id="matchTeam1Select"><option value="">Team 1...</option></select>
@@ -350,7 +349,11 @@
   </div> 
 
   <nav class="bottom-nav">
-    <div class="nav-item active" id="nav-standings" onclick="switchTab('standings')">
+    <div class="nav-item active" id="nav-overview" onclick="switchTab('overview')">
+      <span class="nav-icon">🏠</span>
+      <span>Home</span>
+    </div>
+    <div class="nav-item" id="nav-standings" onclick="switchTab('standings')">
       <span class="nav-icon">📊</span>
       <span>Groups</span>
     </div>
@@ -426,6 +429,7 @@
     document.getElementById(`nav-${tabId}`).classList.add('active');
     
     const titles = {
+      'overview': 'CLUB SI <span>DASHBOARD</span>',
       'standings': 'CLUB SI <span>GROUPS</span>',
       'matches': 'CLUB SI <span>MATCHES</span>',
       'teams': 'CLUB SI <span>TEAMS</span>',
@@ -457,7 +461,7 @@
       state.isAdmin = false; state.adminToken = '';
       document.getElementById('authBtn').textContent = 'Login';
       document.getElementById('nav-admin').classList.add('hidden');
-      switchTab('standings'); // kick out of admin view
+      switchTab('overview'); // kick out of admin view to overview
       renderDashboard();
     } else {
       toggleModal(true);
@@ -480,7 +484,7 @@
       toggleModal(false); 
       updateAdminDropdowns(); 
       renderDashboard();
-      switchTab('admin'); // switch immediately to admin panel
+      switchTab('admin'); 
     } else { 
       alert('Invalid PIN'); document.getElementById('adminPassInput').value = ''; 
     }
@@ -502,14 +506,11 @@
     const t1 = document.getElementById('matchTeam1Select').value;
     const t2 = document.getElementById('matchTeam2Select').value;
     const stage = document.getElementById('matchStageSelect').value;
-    
-    // FETCH THE TIME INPUT
     const time = document.getElementById('matchTimeInput').value;
 
     if (!t1 || !t2) return alert('Select both teams.');
     if (t1 === t2) return alert('Cannot match a team against itself.');
     
-    // SEND TIME TO API
     try { await apiCall('/api/matches', 'POST', { team1_id: t1, team2_id: t2, stage, time }); loadData(); alert("Match Created!");} 
     catch(e) { alert(e.message); }
   }
@@ -615,7 +616,109 @@
   function getTeamName(id) { const t = state.teams.find(t => t.id === id); return t ? t.name : 'Unknown'; }
 
   // --- Rendering UI ---
-  function renderDashboard() { renderStandings(); renderMatches(); renderTeams(); }
+  function renderDashboard() { 
+    renderOverview();
+    renderStandings(); 
+    renderMatches(); 
+    renderTeams(); 
+  }
+
+  // --- NEW RENDER OVERVIEW LOGIC ---
+  function renderOverview() {
+    const container = document.getElementById('overviewContainer');
+    
+    const totalTeams = state.teams.length;
+    const totalPlayers = state.players.length;
+    const totalMatches = state.matches.length;
+    const totalGoals = state.players.reduce((sum, p) => sum + (p.goals || 0), 0);
+
+    // Find top scorer
+    let topScorer = null;
+    if (state.players.length > 0) {
+      topScorer = state.players.reduce((prev, current) => (prev.goals > current.goals) ? prev : current);
+      if (topScorer.goals === 0) topScorer = null; // Don't show top scorer if no one has scored
+    }
+
+    // Find Live or Latest Match
+    const liveMatches = state.matches.filter(m => m.status === 'live');
+    const latestMatch = liveMatches.length > 0 ? liveMatches[0] : (state.matches.length > 0 ? state.matches[0] : null);
+
+    let html = `
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+        <div class="card stat-card" style="border-top-color: var(--primary);">
+          <h3>Teams</h3>
+          <p>${totalTeams}</p>
+        </div>
+        <div class="card stat-card" style="border-top-color: var(--warning);">
+          <h3>Players</h3>
+          <p>${totalPlayers}</p>
+        </div>
+        <div class="card stat-card" style="border-top-color: var(--success);">
+          <h3>Matches</h3>
+          <p>${totalMatches}</p>
+        </div>
+        <div class="card stat-card" style="border-top-color: var(--danger);">
+          <h3>Total Goals</h3>
+          <p>${totalGoals}</p>
+        </div>
+      </div>
+    `;
+
+    // Render Top Scorer if exists
+    if (topScorer) {
+      const topTeam = getTeamName(topScorer.team_id);
+      html += `
+        <div class="card" style="margin-bottom: 1.5rem;">
+          <h3 class="overview-title">👑 Golden Boot Leader</h3>
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+               <div style="background:var(--warning); color:#000; width:45px; height:45px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.2rem; font-family:'Oswald', sans-serif; font-weight:bold; box-shadow:0 0 15px rgba(255, 234, 0, 0.4);">${topScorer.jersey_number}</div>
+               <div>
+                 <div style="font-weight: 700; font-size: 1.2rem;">${topScorer.name}</div>
+                 <div style="color: var(--text-muted); font-size: 0.85rem; font-style: italic;">${topTeam}</div>
+               </div>
+            </div>
+            <div style="font-size: 2.2rem; font-family: 'Oswald', sans-serif; color: var(--primary); font-weight: 700;">
+              ${topScorer.goals} <span style="font-size: 1rem; color: #fff;">⚽</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Render Spotlight Match
+    if (latestMatch) {
+      const isLive = latestMatch.status === 'live';
+      const badgeClass = isLive ? 'status-live' : 'status-completed';
+      const badgeText = isLive ? 'LIVE' : 'FINAL';
+      const timeHTML = latestMatch.time ? `<div class="match-time">🕒 ${latestMatch.time}</div>` : '';
+      
+      html += `
+        <h3 class="overview-title" style="margin-top: 2rem;">🔥 Spotlight Match</h3>
+        <div class="card match-card" data-stage="${latestMatch.stage}">
+          <div class="stage-badge">${latestMatch.stage === 'semi' ? 'Semi-Final' : latestMatch.stage === 'final' ? 'Final' : 'Group Stage'}</div>
+          ${timeHTML}
+          <div class="match-status ${badgeClass}">${badgeText}</div>
+          <div class="scoreboard">
+            <div class="score-team">${getTeamName(latestMatch.team1_id)}</div>
+            <div class="score-number">${latestMatch.team1_score}</div>
+            <div class="score-vs">VS</div>
+            <div class="score-number">${latestMatch.team2_score}</div>
+            <div class="score-team">${getTeamName(latestMatch.team2_id)}</div>
+          </div>
+          <button style="width: 100%; margin-top: 1rem; font-size: 0.85rem;" class="btn-outline" onclick="switchTab('matches')">View All Matches</button>
+        </div>
+      `;
+    } else {
+      html += `
+        <div class="card" style="text-align: center; color: var(--text-muted); padding: 2rem 1rem;">
+          <p>No matches scheduled yet.</p>
+        </div>
+      `;
+    }
+
+    container.innerHTML = html;
+  }
 
   function renderStandings() {
     const container = document.getElementById('standingsContainer');
@@ -662,8 +765,9 @@
       const badgeText = isLive ? 'LIVE' : 'FINAL';
       const stageFormat = match.stage === 'semi' ? 'Semi-Final' : match.stage === 'final' ? 'Final' : 'Group Stage';
 
-      // NEW: RENDER TIME BADGE IF IT EXISTS
-      const timeHTML = match.time ? `<div class="match-time">🕒 ${match.time}</div>` : '';
+      const timeHTML = match.time 
+        ? `<div class="match-time" style="color: var(--primary); border-color: var(--primary);">🕒 ${match.time}</div>` 
+        : `<div class="match-time" style="color: var(--text-muted); opacity: 0.6;">🕒 TBD</div>`;
 
       let adminHTML = '';
       if (state.isAdmin) {
